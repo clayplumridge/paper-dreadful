@@ -1,5 +1,7 @@
 # Paper Dreadful
 
+[![Node.js CI](https://github.com/clayplumridge/paper-dreadful/actions/workflows/ci.yaml/badge.svg)](https://github.com/clayplumridge/paper-dreadful/actions/workflows/ci.yaml)
+
 ## Getting Started
 
 ### Powershell
