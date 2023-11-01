@@ -6,14 +6,20 @@
         "forceConsistentCasingInFileNames": true,
         "module": "CommonJS",
         "moduleResolution": "Node",
-        "noEmitOnError": false,
+        "noEmitOnError": true,
         "removeComments": false,
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
         "target": "ES2019",
-        "jsx": "react"
+        "jsx": "react",
+
+        // Module resolutions
+        "baseUrl": "./packages",
+        "paths": {
+            "@/*": ["*"]
+        }
     },
 
     "include": ["**/*.ts", "**/*.tsx"]
