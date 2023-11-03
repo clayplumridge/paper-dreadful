@@ -22,7 +22,7 @@ async function initWorker() {
     // Authn and session middleware
     app.use(
         session({
-            secret: "keyboard cat",
+            secret: process.env.EXPRESS_SESSION_SECRET,
             resave: true,
             saveUninitialized: true
         })
