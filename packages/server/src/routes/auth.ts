@@ -45,7 +45,7 @@ export function router() {
     router.get(
         "/login-with-google-callback",
         passport.authenticate("google", {
-            successRedirect: "/deck",
+            successRedirect: "http://localhost:5001/deck",
             failureRedirect: "hell.gov"
         })
     );
