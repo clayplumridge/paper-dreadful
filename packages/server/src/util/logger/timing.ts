@@ -17,7 +17,8 @@ export function requestTime(
                 duration,
                 end: new Date(endTime),
                 route: req.url,
-                start: new Date(requestTime)
+                start: new Date(requestTime),
+                requestId: req.id
             },
             "Timing"
         );

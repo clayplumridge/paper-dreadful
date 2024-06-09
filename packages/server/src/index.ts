@@ -8,6 +8,7 @@ import { getLogger } from "./util/logger";
 import { requestTime } from "./util/logger/timing";
 import { router as authRouter } from "./routes/auth";
 import { configure as configureEnv } from "./util/env";
+import { requestId } from "./util/logger/tracing";
 import { SAMPLE_DECK } from "@/common/contracts/samples";
 
 async function initWorker() {
@@ -15,6 +16,7 @@ async function initWorker() {
 
     const app = express();
 
+    app.use(requestId);
     app.use(requestTime);
     app.use(cookieParser());
     app.use(express.urlencoded({ extended: true }));
