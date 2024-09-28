@@ -1,11 +1,16 @@
+// Disabling promise checks to allow async/await in void functions that use 'done'
+// Makes writing handlers for passport way easier
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import express from "express";
 import passport from "passport";
 import { Strategy as GoogleOauthStrategy } from "passport-google-oauth20";
+import { getDatabaseClient } from "../database";
 
 declare global {
     namespace Express {
         interface User {
-            id: string;
+            id: number;
+            displayName: string;
         }
     }
 }
@@ -22,8 +27,21 @@ export function router() {
                     "http://localhost:5001/auth/login-with-google-callback",
                 scope: ["openid"]
             },
-            (accessToken, refreshToken, profile, done) => {
-                done(null, { id: profile.id });
+            async (accessToken, refreshToken, profile, done) => {
+                const userRepo = getDatabaseClient().user();
+                let user = await userRepo.findOneBy({
+                    googleUserId: profile.id
+                });
+
+                if (user == null) {
+                    user = userRepo.create({
+                        googleUserId: profile.id,
+                        displayName: "Yeets McGee"
+                    });
+                    await userRepo.save(user);
+                }
+
+                done(null, { id: user.id, displayName: user.displayName });
             }
         )
     );
@@ -32,11 +50,19 @@ export function router() {
         done(null, user.id);
     });
 
-    passport.deserializeUser((id, done) => {
-        if (typeof id === "string") {
-            done(null, { id });
+    passport.deserializeUser(async (id, done) => {
+        if (typeof id === "number") {
+            const user = await getDatabaseClient().user().findOneBy({ id });
+
+            if (!user) {
+                throw new Error(
+                    "Failed to deserialize user; ID not found in database"
+                );
+            }
+
+            done(null, { id, displayName: user.displayName });
         } else {
-            done("Failed to deserialize user: ID is not a string");
+            done("Failed to deserialize user: ID is not a number");
         }
     });
 

@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express-session";
+
 import passport from "passport";
 import cookieParser from "cookie-parser";
 
@@ -9,15 +10,17 @@ import { requestTime } from "./util/logger/timing";
 import { router as authRouter } from "./routes/auth";
 import { configure as configureEnv } from "./util/env";
 import { requestId } from "./util/logger/tracing";
+import { initializeDatabaseConnection } from "./database";
+import { createSessionStore } from "./database/session";
 import { SAMPLE_DECK } from "@/common/contracts/samples";
 
 async function initWorker() {
     configureEnv();
+    await initializeDatabaseConnection();
 
     const app = express();
 
-    app.use(requestId);
-    app.use(requestTime);
+    app.use(requestId, requestTime);
     app.use(cookieParser());
     app.use(express.urlencoded({ extended: true }));
 
@@ -26,7 +29,8 @@ async function initWorker() {
         session({
             secret: process.env.EXPRESS_SESSION_SECRET,
             resave: true,
-            saveUninitialized: true
+            saveUninitialized: true,
+            store: createSessionStore()
         })
     );
     app.use(passport.initialize());
