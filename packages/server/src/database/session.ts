@@ -6,7 +6,7 @@ const StoreTemplate = MySqlStoreCreator(session);
 
 export function createSessionStore(): session.Store {
     const connection = mysql2.createPool({
-        host: "localhost",
+        host: process.env.DATABASE_HOST,
         port: process.env.DATABASE_PORT,
         database: process.env.DATABASE_DB_NAME,
         user: process.env.DATABASE_USERNAME,

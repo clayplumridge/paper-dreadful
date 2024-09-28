@@ -50,7 +50,18 @@ const consoleLogMap: Record<TraceLevel, (message: string) => void> = {
 };
 
 class LoggerImpl implements Logger {
-    constructor(private readonly area: string) {}
+    private readonly allowedActions: Set<string> | undefined;
+
+    constructor(private readonly area: string) {
+        const allowedActionsConfigValue =
+            process.env[`LOGGER_ALLOWED_ACTIONS_FOR_AREA_${area}`];
+
+        if (allowedActionsConfigValue) {
+            this.allowedActions = new Set(
+                allowedActionsConfigValue.split(",").map(x => x.toLowerCase())
+            );
+        }
+    }
 
     public debug = (payload: unknown, action?: string) =>
         this.trace(TraceLevel.Debug, action, payload);
@@ -74,6 +85,13 @@ class LoggerImpl implements Logger {
             : `worker-${cluster.worker?.id}`;
 
         action = action ?? "Log";
+
+        if (
+            this.allowedActions &&
+            !this.allowedActions.has(action.toLowerCase())
+        ) {
+            return;
+        }
 
         // Using inspect instead of JSON.stringify because inspect doesn't throw on circular references, just handles them
         consoleLogMap[level](

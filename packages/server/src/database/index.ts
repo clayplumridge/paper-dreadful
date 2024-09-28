@@ -8,7 +8,7 @@ export async function initializeDatabaseConnection() {
     if (!dataSource) {
         dataSource = new DataSource({
             type: "mysql",
-            host: "localhost",
+            host: process.env.DATABASE_HOST,
             port: process.env.DATABASE_PORT,
             database: process.env.DATABASE_DB_NAME,
             username: process.env.DATABASE_USERNAME,

@@ -53,5 +53,5 @@ async function initWorker() {
     });
 }
 
-// TODO: Remove worker limit once a shared store is setup
-void createCluster(initWorker, 1);
+configureEnv();
+void createCluster(initWorker, process.env.CLUSTER_SIZE);

@@ -4,6 +4,8 @@ declare global {
     namespace NodeJS {
         interface ProcessEnv {
             API_SERVER_PORT: number;
+            CLUSTER_SIZE: number;
+            DATABASE_HOST: string;
             DATABASE_PORT: number;
             DATABASE_USERNAME: string;
             DATABASE_PASSWORD: string;
