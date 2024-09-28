@@ -1,7 +1,6 @@
-import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { getLogger } from "../util/logger";
-import { User } from "./tables/user";
+import { Card, CardEntry, CardPrice, Deck, Format, User } from "./tables";
 import { dbLogger } from "./logger";
 
 let dataSource: DataSource;
@@ -17,7 +16,7 @@ export async function initializeDatabaseConnection() {
             logging: true,
             logger: dbLogger(),
             synchronize: true,
-            entities: [User]
+            entities: [CardEntry, CardPrice, Card, Deck, Format, User]
         });
 
         await dataSource.initialize();
