@@ -1,21 +1,24 @@
+import cookieParser from "cookie-parser";
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import cookieParser from "cookie-parser";
 
+import { SAMPLE_DECK } from "@/common/contracts/samples";
+
+import { getSessionStore } from "./database";
+import { configure as configureEnv } from "./env";
+import { router as authRouter } from "./routes/auth";
 import { createCluster } from "./util/cluster";
 import { getLogger } from "./util/logger";
 import { requestTime } from "./util/logger/timing";
-import { router as authRouter } from "./routes/auth";
-import { configure as configureEnv } from "./util/env";
-import { SAMPLE_DECK } from "@/common/contracts/samples";
+import { requestId } from "./util/logger/tracing";
 
 async function initWorker() {
     configureEnv();
 
     const app = express();
 
-    app.use(requestTime);
+    app.use(requestId, requestTime);
     app.use(cookieParser());
     app.use(express.urlencoded({ extended: true }));
 
@@ -24,7 +27,8 @@ async function initWorker() {
         session({
             secret: process.env.EXPRESS_SESSION_SECRET,
             resave: true,
-            saveUninitialized: true
+            saveUninitialized: true,
+            store: getSessionStore(),
         })
     );
     app.use(passport.initialize());
@@ -37,12 +41,13 @@ async function initWorker() {
     });
 
     app.listen(process.env.API_SERVER_PORT, () => {
-        getLogger("PaperDreadful.Init").info(
-            `Server successfully started on port ${process.env.API_SERVER_PORT}`,
-            "Listen"
-        );
+        getLogger("PaperDreadful.Init")
+            .info(
+                `Server successfully started on port ${process.env.API_SERVER_PORT}`,
+                "Listen"
+            );
     });
 }
 
-// TODO: Remove worker limit once a shared store is setup
-void createCluster(initWorker, 1);
+configureEnv();
+void createCluster(initWorker, process.env.CLUSTER_SIZE);
