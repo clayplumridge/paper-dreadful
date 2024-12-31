@@ -5,7 +5,7 @@ import passport from "passport";
 
 import { SAMPLE_DECK } from "@/common/contracts/samples";
 
-import { getSessionStore } from "./database";
+import { getSessionStore, runMigrations } from "./database";
 import { configure as configureEnv } from "./env";
 import { router as authRouter } from "./routes/auth";
 import { createCluster } from "./util/cluster";
@@ -41,13 +41,16 @@ async function initWorker() {
     });
 
     app.listen(process.env.API_SERVER_PORT, () => {
-        getLogger("PaperDreadful.Init")
+        getLogger("init")
             .info(
                 `Server successfully started on port ${process.env.API_SERVER_PORT}`,
-                "Listen"
+                "listen"
             );
     });
 }
 
 configureEnv();
-void createCluster(initWorker, process.env.CLUSTER_SIZE);
+runMigrations()
+    .then(() => createCluster(initWorker, process.env.CLUSTER_SIZE))
+    .catch(() => process.exit(1));
+

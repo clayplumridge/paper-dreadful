@@ -81,11 +81,11 @@ class LoggerImpl implements Logger {
         payload: unknown
     ) {
         const timestamp = Date.now();
-        const nodeClusterId = cluster.isMaster
+        const nodeClusterId = cluster.isPrimary
             ? "primary"
             : `worker-${cluster.worker?.id}`;
 
-        action = action ?? "Log";
+        action = action ?? "log";
 
         if (
             this.allowedActions &&

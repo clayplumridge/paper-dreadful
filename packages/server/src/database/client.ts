@@ -1,42 +1,11 @@
-import { Knex } from "knex";
+import { Kysely } from "kysely";
 
-interface User {
-    id: number;
-    displayName: string;
-    googleUserId: string;
-}
+import { UserRepo } from "./repos/user";
+import { Database } from "./schema";
 
 export class DatabaseClient {
-    user = new UserRepo(this.getKnex);
+    custom = this.db;
+    user = new UserRepo(this.db);
 
-    constructor(private readonly getKnex: () => Knex) {}
-}
-
-class UserRepo {
-    constructor(private readonly getKnex: () => Knex) {}
-
-    private query() {
-        return this.getKnex()
-            .queryBuilder()
-            .table('user');
-    }
-
-    getById(id: number): Promise<User | undefined> {
-        return this.query()
-            .where("id", id)
-            .first();
-    }
-
-    getByGoogleUserId(id: string): Promise<User | undefined> {
-        return this.query()
-            .where("googleUserId", id)
-            .first();
-    }
-
-    async create(details: Omit<User, "id">): Promise<User> {
-        await this.query()
-            .insert(details);
-        // Since we just inserted we know it'll retrieve successfully
-        return this.getByGoogleUserId(details.googleUserId) as Promise<User>;
-    }
+    constructor(private readonly db: Kysely<Database>) {}
 }

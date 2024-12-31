@@ -1,12 +1,13 @@
 import cluster from "cluster";
 import os from "os";
+
 import { getLogger } from "../logger";
 
 export async function createCluster(
     initWorker: () => Promise<void>,
     workers?: number
 ) {
-    const logger = getLogger("SDK.Cluster");
+    const logger = getLogger("cluster");
 
     if (cluster.isPrimary) {
         logger.info(`Primary process ${process.pid} started`);
