@@ -1,4 +1,5 @@
 import express from "express";
+
 import { getLogger } from ".";
 
 export function requestTime(
@@ -12,16 +13,17 @@ export function requestTime(
         const endTime = Date.now();
         const duration = endTime - requestTime;
 
-        getLogger("Express.Request").timing(
-            {
-                duration,
-                end: new Date(endTime),
-                route: req.url,
-                start: new Date(requestTime),
-                requestId: req.id
-            },
-            "Timing"
-        );
+        getLogger("Express.Request")
+            .timing(
+                {
+                    duration,
+                    end: new Date(endTime),
+                    route: req.url,
+                    start: new Date(requestTime),
+                    requestId: req.id,
+                },
+                "Timing"
+            );
     });
 
     next();
@@ -39,14 +41,15 @@ export function withTiming<T extends (...args: any[]) => any>(
         const end = Date.now();
         const duration = end - start;
 
-        getLogger(area).timing(
-            {
-                duration,
-                end: new Date(end),
-                start: new Date(start)
-            },
-            action
-        );
+        getLogger(area)
+            .timing(
+                {
+                    duration,
+                    end: new Date(end),
+                    start: new Date(start),
+                },
+                action
+            );
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return result;
