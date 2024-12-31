@@ -31,7 +31,7 @@ export function router() {
             },
             async (accessToken, refreshToken, profile, done) => {
                 const userRepo = getDatabaseClient().user;
-                let user = await userRepo.getByGoogleUserId(profile.id);
+                let user = await userRepo.byGoogleUserId(profile.id);
 
                 if (!user) {
                     user = await userRepo.create({
@@ -40,7 +40,7 @@ export function router() {
                     });
 
                     getLogger("auth")
-                        .info(`Created new user with display name ${user.displayName}`);
+                        .info(`Created new user with display name ${user.displayName}`, "newuser");
                 }
 
                 done(null, { id: user.id, displayName: user.displayName });
@@ -56,7 +56,7 @@ export function router() {
         if (typeof id === "number") {
             const user = await getDatabaseClient()
                 .user
-                .getById(id);
+                .byId(id);
 
             if (!user) {
                 throw new Error(
