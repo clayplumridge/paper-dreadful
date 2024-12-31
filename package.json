@@ -12,7 +12,7 @@
         "server:build": "yarn workspace server build",
         "server:start:dev": "yarn workspace server start:dev",
         "build": "concurrently \"yarn:*:build\"",
-        "start:dev": "concurrently --kill-others-on-fail \"yarn:*:start:dev\"",
+        "start:dev": "concurrently --kill-others \"yarn:*:start:dev\"",
         "test": "jest",
         "lint": "eslint ."
     },
@@ -21,7 +21,7 @@
         "@types/jest": "^29.0.0",
         "@typescript-eslint/eslint-plugin": "^7.0.0",
         "@typescript-eslint/parser": "^7.0.0",
-        "concurrently": "^8.0.0",
+        "concurrently": "^9.0.0",
         "eslint": "^8.0.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "jest": "^29.0.0",
@@ -30,5 +30,5 @@
         "ts-jest": "^29.0.0",
         "typescript": "^5.0.0"
     },
-    "packageManager": "yarn@1.22.22"
+    "packageManager": "yarn@4.6.0"
 }
