@@ -6,7 +6,7 @@ export const enum TraceLevel {
     Error = "error",
     Info = "info",
     Timing = "timing",
-    Warn = "warn"
+    Warn = "warn",
 }
 
 export interface Trace {
@@ -46,7 +46,7 @@ const consoleLogMap: Record<TraceLevel, (message: string) => void> = {
     error: console.error,
     info: console.log,
     timing: console.log,
-    warn: console.warn
+    warn: console.warn,
 };
 
 class LoggerImpl implements Logger {
@@ -58,7 +58,8 @@ class LoggerImpl implements Logger {
 
         if (allowedActionsConfigValue) {
             this.allowedActions = new Set(
-                allowedActionsConfigValue.split(",").map(x => x.toLowerCase())
+                allowedActionsConfigValue.split(",")
+                    .map(x => x.toLowerCase())
             );
         }
     }
@@ -97,7 +98,8 @@ class LoggerImpl implements Logger {
         consoleLogMap[level](
             `[${new Date(
                 timestamp
-            ).toLocaleString()}][${level}][${nodeClusterId}][${
+            )
+                .toLocaleString()}][${level}][${nodeClusterId}][${
                 this.area
             }][${action}] ${inspect(payload)}`
         );

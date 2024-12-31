@@ -4,7 +4,9 @@
 import express from "express";
 import passport from "passport";
 import { Strategy as GoogleOauthStrategy } from "passport-google-oauth20";
+
 import { getDatabaseClient } from "../database";
+import { getLogger } from "../util/logger";
 
 declare global {
     namespace Express {
@@ -25,20 +27,20 @@ export function router() {
                 clientSecret: process.env.GOOGLE_OAUTH_SECRET,
                 callbackURL:
                     "http://localhost:5001/auth/login-with-google-callback",
-                scope: ["openid"]
+                scope: ["openid"],
             },
             async (accessToken, refreshToken, profile, done) => {
-                const userRepo = getDatabaseClient().user();
-                let user = await userRepo.findOneBy({
-                    googleUserId: profile.id
-                });
+                const userRepo = getDatabaseClient().user;
+                let user = await userRepo.getByGoogleUserId(profile.id);
 
-                if (user == null) {
-                    user = userRepo.create({
+                if (!user) {
+                    user = await userRepo.create({
                         googleUserId: profile.id,
-                        displayName: "Yeets McGee"
+                        displayName: "Yeets McGee",
                     });
-                    await userRepo.save(user);
+
+                    getLogger("auth")
+                        .info(`Created new user with display name ${user.displayName}`);
                 }
 
                 done(null, { id: user.id, displayName: user.displayName });
@@ -52,7 +54,9 @@ export function router() {
 
     passport.deserializeUser(async (id, done) => {
         if (typeof id === "number") {
-            const user = await getDatabaseClient().user().findOneBy({ id });
+            const user = await getDatabaseClient()
+                .user
+                .getById(id);
 
             if (!user) {
                 throw new Error(
@@ -72,7 +76,7 @@ export function router() {
         "/login-with-google-callback",
         passport.authenticate("google", {
             successRedirect: "/deck",
-            failureRedirect: "hell.gov"
+            failureRedirect: "hell.gov",
         })
     );
 

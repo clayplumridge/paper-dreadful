@@ -1,25 +1,20 @@
-// Required for any/all DB connections to work
-import "reflect-metadata";
-
+import cookieParser from "cookie-parser";
 import express from "express";
 import session from "express-session";
-
 import passport from "passport";
-import cookieParser from "cookie-parser";
 
+import { SAMPLE_DECK } from "@/common/contracts/samples";
+
+import { getSessionStore } from "./database";
+import { configure as configureEnv } from "./env";
+import { router as authRouter } from "./routes/auth";
 import { createCluster } from "./util/cluster";
 import { getLogger } from "./util/logger";
 import { requestTime } from "./util/logger/timing";
-import { router as authRouter } from "./routes/auth";
-import { configure as configureEnv } from "./util/env";
 import { requestId } from "./util/logger/tracing";
-import { initializeDatabaseConnection } from "./database";
-import { createSessionStore } from "./database/session";
-import { SAMPLE_DECK } from "@/common/contracts/samples";
 
 async function initWorker() {
     configureEnv();
-    await initializeDatabaseConnection();
 
     const app = express();
 
@@ -33,7 +28,7 @@ async function initWorker() {
             secret: process.env.EXPRESS_SESSION_SECRET,
             resave: true,
             saveUninitialized: true,
-            store: createSessionStore()
+            store: getSessionStore(),
         })
     );
     app.use(passport.initialize());
@@ -46,10 +41,11 @@ async function initWorker() {
     });
 
     app.listen(process.env.API_SERVER_PORT, () => {
-        getLogger("PaperDreadful.Init").info(
-            `Server successfully started on port ${process.env.API_SERVER_PORT}`,
-            "Listen"
-        );
+        getLogger("PaperDreadful.Init")
+            .info(
+                `Server successfully started on port ${process.env.API_SERVER_PORT}`,
+                "Listen"
+            );
     });
 }
 
