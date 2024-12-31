@@ -19,10 +19,12 @@ export class UserRepo {
             .executeTakeFirst();
     }
 
-    create(user: NewUser) {
-        return this.db.insertInto("user")
+    async create(user: NewUser): Promise<User> {
+        await this.db.insertInto("user")
             .values(user)
-            .returningAll()
-            .executeTakeFirstOrThrow();
+            .execute();
+        
+        // Because this user was just created, we can assert that we'll find it.
+        return this.byGoogleUserId(user.googleUserId) as Promise<User>;
     }
 }

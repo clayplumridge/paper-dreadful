@@ -13,7 +13,7 @@ export function requestTime(
         const endTime = Date.now();
         const duration = endTime - requestTime;
 
-        getLogger("Express.Request")
+        getLogger("express.request")
             .timing(
                 {
                     duration,
@@ -22,7 +22,7 @@ export function requestTime(
                     start: new Date(requestTime),
                     requestId: req.id,
                 },
-                "Timing"
+                "timing"
             );
     });
 

@@ -40,7 +40,7 @@ export function router() {
                     });
 
                     getLogger("auth")
-                        .info(`Created new user with display name ${user.displayName}`);
+                        .info(`Created new user with display name ${user.displayName}`, "newuser");
                 }
 
                 done(null, { id: user.id, displayName: user.displayName });
