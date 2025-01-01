@@ -2,7 +2,7 @@ import { Kysely } from "kysely";
 
 import { Database } from "../schema";
 
-export class UserRepo {
+export class DeckRepo {
     constructor(private readonly db: Kysely<Database>) {}
 
     getDetailsById(id: number) {
@@ -18,6 +18,7 @@ export class UserRepo {
                 "cardPrices.priceInUsd",
                 "cards.imageUrl",
                 "cards.scryfallUrl",
-            ]);
+            ])
+            .execute();
     }
 }

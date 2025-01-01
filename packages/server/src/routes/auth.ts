@@ -30,7 +30,7 @@ export function router() {
                 scope: ["openid"],
             },
             async (accessToken, refreshToken, profile, done) => {
-                const userRepo = getDatabaseClient().user;
+                const userRepo = getDatabaseClient().users;
                 let user = await userRepo.byGoogleUserId(profile.id);
 
                 if (!user) {
@@ -55,7 +55,7 @@ export function router() {
     passport.deserializeUser(async (id, done) => {
         if (typeof id === "number") {
             const user = await getDatabaseClient()
-                .user
+                .users
                 .byId(id);
 
             if (!user) {

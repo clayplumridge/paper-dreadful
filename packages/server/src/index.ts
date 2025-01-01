@@ -1,11 +1,10 @@
 import cookieParser from "cookie-parser";
-import express from "express";
+import express, { RequestHandler } from "express";
+import asyncHandler from "express-async-handler";
 import session from "express-session";
 import passport from "passport";
 
-import { SAMPLE_DECK } from "@/common/contracts/samples";
-
-import { getSessionStore, runMigrations } from "./database";
+import { getDatabaseClient, getSessionStore, runMigrations } from "./database";
 import { configure as configureEnv } from "./env";
 import { router as authRouter } from "./routes/auth";
 import { createCluster } from "./util/cluster";
@@ -31,14 +30,15 @@ async function initWorker() {
             store: getSessionStore(),
         })
     );
-    app.use(passport.initialize());
+    app.use(passport.initialize() as RequestHandler);
     app.use(passport.session());
 
     app.use("/auth", authRouter());
 
-    app.get("/deck", (req, res) => {
-        res.json(SAMPLE_DECK);
-    });
+    app.get("/deck", asyncHandler(async (req, res) => {
+        const result = await getDatabaseClient().decks.getDetailsById(1);
+        res.json(result);
+    }));
 
     app.listen(process.env.API_SERVER_PORT, () => {
         getLogger("init")
