@@ -2,14 +2,20 @@ import cluster from "cluster";
 import MySqlStoreCreator from "express-mysql-session";
 import * as session from "express-session";
 import { promises as fs } from "fs";
-import { FileMigrationProvider, Kysely, Migrator, MysqlDialect } from "kysely";
+import {
+    CamelCasePlugin,
+    FileMigrationProvider,
+    Kysely,
+    Migrator,
+    MysqlDialect,
+} from "kysely";
 import * as mysql2 from "mysql2";
 import * as path from "path";
 import { inspect } from "util";
 
 import { getLogger } from "../util/logger";
 import { DatabaseClient } from "./client";
-import { Database } from "./schema";
+import { DB } from "./schema/schema_gen";
 
 export { DatabaseClient };
 
@@ -39,15 +45,13 @@ const getDatabaseConnection = memo(() =>  {
 const getDatabaseDialect = memo(() => {
     getLogger("database")
         .info("Creating database dialect", "dialect");
-    return new MysqlDialect({
-        pool: async () => getDatabaseConnection(),
-    });
+    return new MysqlDialect({pool: async () => getDatabaseConnection()});
 });
 
 const getKysely = memo(() => {
     getLogger("database")
         .info("Creating Kysely instance", "kysely");
-    return new Kysely<Database>({dialect: getDatabaseDialect() });
+    return new Kysely<DB>({dialect: getDatabaseDialect(), plugins: [new CamelCasePlugin({})] });
 });
 
 export const getDatabaseClient = memo(() => {

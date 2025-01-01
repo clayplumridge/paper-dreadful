@@ -1,18 +1,18 @@
-import { Kysely, sql } from "kysely";
+import { Kysely } from "kysely";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function up(db: Kysely<any>): Promise<void> {
-    await db.schema.createTable("format")
+    await db.schema.createTable("cards")
         .addColumn("id", "serial", col => col.primaryKey())
-        .addColumn("displayName", "varchar(255)")
-        .addColumn("created_at", "timestamp", col => col.defaultTo(sql`now()`)
-            .notNull())
+        .addColumn("display_name", "varchar(255)", col => col.notNull())
+        .addColumn("image_url", "varchar(255)", col => col.notNull())
+        .addColumn("scryfall_url", "varchar(255)", col => col.notNull())
         .execute();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function down(db: Kysely<any>): Promise<void> {
-    await db.schema.dropTable("format")
+    await db.schema.dropTable("cards")
         .execute();
 }
 

@@ -10,7 +10,6 @@ dist
 
 // Config files
 jest.*.js
-.eslintrc.js
 
 // Data files
 *.json

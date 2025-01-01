@@ -5,7 +5,7 @@
     "scripts": {
         "build": "tsc",
         "start:dev": "ts-node -r tsconfig-paths/register src/index.ts",
-        "knex": "npx knex --knexfile ./src/database/knexfile.ts"
+        "kysely-gen": "kysely-codegen --out-file ./src/database/schema/schema_gen.d.ts --camel-case --singular && npx eslint ./src/database/schema/schema_gen.d.ts --fix"
     },
     "devDependencies": {
         "@types/cookie-parser": "^1.4.5",
@@ -15,6 +15,7 @@
         "@types/node": "^16.11.11",
         "@types/passport": "^1.0.14",
         "@types/passport-google-oauth20": "^2.0.13",
+        "kysely-codegen": "^0.17.0",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.2.0"
     },
