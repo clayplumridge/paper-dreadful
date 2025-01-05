@@ -1,13 +1,22 @@
+import { Button, Container } from "@mui/material";
 import axios from "axios";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 
-import { CreateDeckRequest, CreateDeckResponse, CreateFormatRequest } from "@/common/contracts";
+import {
+    CreateDeckRequest,
+    CreateDeckResponse,
+    CreateFormatRequest,
+    DeckDetailsResponse,
+} from "@/common/contracts";
+
+import { DeckViewer } from "./deck/viewer";
 
 axios.defaults.withCredentials = true;
 
 const App: React.FC<unknown> = () => {
     const [displayText, setDisplayText] = React.useState<string>("");
+    const [deckDetails, setDeckDetails] = React.useState<DeckDetailsResponse>();
 
     async function createDeck() {
         const result = await tryCreateDeck();
@@ -23,18 +32,30 @@ const App: React.FC<unknown> = () => {
         window.location.href = "http://localhost:5001/auth/login-with-google";
     }
 
-    return <div>
-        <button onClick={() => void createFormat()}>
-            Create Format
-        </button>
-        <button onClick={() => void createDeck()}>
-            Create Deck
-        </button>
-        <button onClick={() => void doLogin()}>
-            Login
-        </button>
-        <div>{displayText}</div>
-    </div>;
+    async function fetchDeck() {
+        const result = await tryGetDeck();
+        setDeckDetails(result.data);
+    }
+
+    return (
+        <Container maxWidth="xl">
+            <Button onClick={() => void createFormat()} variant="outlined">
+                Create Format
+            </Button>
+            <Button onClick={() => void createDeck()} variant="outlined">
+                Create Deck
+            </Button>
+            <Button onClick={() => void doLogin()} variant="outlined">
+                Login
+            </Button>
+            <Button onClick={() => void fetchDeck()} variant="outlined">
+                Fetch deck
+            </Button>
+            <div>{displayText}</div>
+
+            {deckDetails && <DeckViewer deckDetails={deckDetails}/> }
+        </Container>
+    );
 };
 
 function tryCreateDeck() {
@@ -52,6 +73,10 @@ function tryCreateFormat() {
         bannedCardNames: ["Hypergenesis"],
         displayName: "Test Format",
     } satisfies CreateFormatRequest);
+}
+
+function tryGetDeck() {
+    return axios.get<DeckDetailsResponse>("http://localhost:5001/deck/1");
 }
 
 const container = document.getElementById("react-root")!;

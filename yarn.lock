@@ -2374,6 +2374,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@saeris/react-mana@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@saeris/react-mana@npm:1.0.3"
+  dependencies:
+    classnames: "npm:^2.2.6"
+  peerDependencies:
+    mana-font: ^1.4.1
+    react: 16.x
+  checksum: 10c0/7a20a46d66918bbfa44aef5fd5fc9a068b49b5f7dd4fa30610a1729c7d8f560dfedc7c7abe08b1677a7593503cfdd84a23fd54421553190feb43b118f1c5ed07
+  languageName: node
+  linkType: hard
+
 "@scryfall/api-types@npm:^1.0.0-alpha.4":
   version: 1.0.0-alpha.4
   resolution: "@scryfall/api-types@npm:1.0.0-alpha.4"
@@ -3680,6 +3692,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"classnames@npm:^2.2.6":
+  version: 2.5.1
+  resolution: "classnames@npm:2.5.1"
+  checksum: 10c0/afff4f77e62cea2d79c39962980bf316bacb0d7c49e13a21adaadb9221e1c6b9d3cdb829d8bb1b23c406f4e740507f37e1dcf506f7e3b7113d17c5bab787aa69
+  languageName: node
+  linkType: hard
+
 "cliui@npm:^8.0.1":
   version: 8.0.1
   resolution: "cliui@npm:8.0.1"
@@ -4947,9 +4966,11 @@ __metadata:
     "@emotion/styled": "npm:^11.14.0"
     "@mui/material": "npm:^6.3.1"
     "@parcel/transformer-sass": "npm:^2.10.1"
+    "@saeris/react-mana": "npm:^1.0.3"
     "@types/react": "npm:^18.2.33"
     "@types/react-dom": "npm:^18.2.14"
     axios: "npm:^1.7.9"
+    mana-font: "npm:^1.18.0"
     parcel: "npm:^2.10.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -6534,6 +6555,13 @@ __metadata:
   dependencies:
     tmpl: "npm:1.0.5"
   checksum: 10c0/b0e6e599780ce6bab49cc413eba822f7d1f0dfebd1c103eaa3785c59e43e22c59018323cf9e1708f0ef5329e94a745d163fcbb6bff8e4c6742f9be9e86f3500c
+  languageName: node
+  linkType: hard
+
+"mana-font@npm:^1.18.0":
+  version: 1.18.0
+  resolution: "mana-font@npm:1.18.0"
+  checksum: 10c0/0b1d468f072e3c721ba736ffa9c14cceeeb60523d29574dff022d7d5135ad82cf9b7a70c97951b9d52723c08b86e13177dc9a70a5b8ece870f778a581272f6d0
   languageName: node
   linkType: hard
 
