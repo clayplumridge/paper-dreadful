@@ -37,6 +37,7 @@ export interface Card {
     manaCost: string;
     scryfallId: string;
     scryfallUrl: string;
+    type: string;
 }
 
 export interface Deck {

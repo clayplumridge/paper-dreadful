@@ -1,6 +1,7 @@
-import { ScryfallCard, ScryfallLayout } from "@scryfall/api-types";
+import { ScryfallCard } from "@scryfall/api-types";
 import { Kysely } from "kysely";
 
+import { getImageUri, parseTypeLine } from "../../scryfall";
 import { Card, Database } from "../schema";
 
 export class CardRepo {
@@ -50,21 +51,6 @@ function toDatabaseCard(card: ScryfallCard.Any): Card {
         manaCost: card.mana_cost ?? "",
         scryfallId: card.id,
         scryfallUrl: card.uri,
+        type: parseTypeLine(card) ?? "UNKNOWN",
     };
-}
-
-function getImageUri(card: ScryfallCard.Any): string {
-    if("card_faces" in card) {
-        if(isSingleSideSplit(card)) {
-            return card.image_uris?.png ?? "about:blank";
-        } else {
-            return card.card_faces[0].image_uris?.png ?? "about:blank";
-        }
-    } else {
-        return (card as ScryfallCard.AnySingleFaced).image_uris?.png ?? "about:blank";
-    }
-}
-
-function isSingleSideSplit(card: ScryfallCard.Any): card is ScryfallCard.AnySingleSidedSplit {
-    return card.layout === ScryfallLayout.Split || card.layout === ScryfallLayout.Flip || card.layout === ScryfallLayout.Adventure;
 }

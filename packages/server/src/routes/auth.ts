@@ -75,7 +75,7 @@ export function router() {
     router.get(
         "/login-with-google-callback",
         passport.authenticate("google", {
-            successRedirect: "localhost:1234",
+            successRedirect: "http://localhost:1234",
             failureRedirect: "hell.gov",
         })
     );

@@ -9,6 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("scryfall_url", "varchar(255)", col => col.notNull())
         .addColumn("color_identity", "varchar(5)", col => col.notNull())
         .addColumn("mana_cost", "varchar(255)", col => col.notNull())
+        .addColumn("type", "varchar(255)", col => col.notNull())
         .execute();
 
     await db.schema.createIndex("IDX_cards_card_name")

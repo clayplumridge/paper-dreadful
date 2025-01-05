@@ -3,6 +3,7 @@ export interface CardCount {
     displayName: string;
     priceInUsd: number;
     imageUrl: string;
+    type: string;
     count: number;
 }
 

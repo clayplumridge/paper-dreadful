@@ -23,8 +23,11 @@ function isUseableCard(card: ScryfallCard.Any) {
     const isUseless = card.digital
         || uselessLayouts.has(card.layout)
         || card.content_warning === true
+        || card.set_type == "funny"
         || Object.values(card.legalities)
-            .every(x => x === "not_legal");
+            .every(x => x === "not_legal")
+        || getTypeLine(card)
+            .includes("Conspiracy");
     return !isUseless;
 }
 
@@ -79,5 +82,48 @@ function getOracleId(card: ScryfallCard.Any) {
         return card.card_faces[0].oracle_id;
     } else {
         return card.oracle_id;
+    }
+}
+
+export function getImageUri(card: ScryfallCard.Any): string {
+    if("card_faces" in card) {
+        if(isSingleSideSplit(card)) {
+            return card.image_uris?.png ?? "about:blank";
+        } else {
+            return card.card_faces[0].image_uris?.png ?? "about:blank";
+        }
+    } else {
+        return (card as ScryfallCard.AnySingleFaced).image_uris?.png ?? "about:blank";
+    }
+}
+
+function isSingleSideSplit(card: ScryfallCard.Any): card is ScryfallCard.AnySingleSidedSplit {
+    return card.layout === ScryfallLayout.Split || card.layout === ScryfallLayout.Flip || card.layout === ScryfallLayout.Adventure;
+}
+
+const typePriority = [
+    "Land",
+    "Creature",
+    "Planeswalker",
+    "Instant",
+    "Sorcery",
+    "Artifact",
+    "Enchantment",
+    "Battle",
+];
+export function parseTypeLine(card: ScryfallCard.Any) {
+    const typeLine = getTypeLine(card);
+    return typePriority.find(x => typeLine.includes(x));
+}
+
+function getTypeLine(card: ScryfallCard.Any) {
+    if("card_faces" in card) {
+        if(isSingleSideSplit(card)) {
+            return card.type_line;
+        } else {
+            return card.card_faces[0].type_line;
+        }
+    } else {
+        return (card as ScryfallCard.AnySingleFaced).type_line;
     }
 }

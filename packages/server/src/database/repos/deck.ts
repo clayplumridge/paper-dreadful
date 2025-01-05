@@ -23,6 +23,7 @@ export class DeckRepo {
                     "cards.imageUrl",
                     "cards.scryfallUrl",
                     "cards.scryfallId",
+                    "cards.type",
                 ])
                 .execute()
         );
