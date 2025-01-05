@@ -125,6 +125,7 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
                 priceInUsd: Number(x.priceInUsd),
                 imageUrl: x.imageUrl,
                 type: x.type,
+                manaCost: x.manaCost,
             };
         }),
         ownerDetails: {

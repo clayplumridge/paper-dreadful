@@ -5,6 +5,7 @@ export interface CardCount {
     imageUrl: string;
     type: string;
     count: number;
+    manaCost: string;
 }
 
 export interface DeckDetailsRequest {

@@ -6,7 +6,7 @@ import {
     ListItemText,
     ListSubheader,
 } from "@mui/material";
-import { Mana } from "@saeris/react-mana";
+import { Mana, ManaSymbol } from "@saeris/react-mana";
 import React from "react";
 
 import { CardCount, DeckDetailsResponse } from "@/common/contracts";
@@ -69,15 +69,22 @@ const CardGroup: React.FC<CardGroupProps> = props => {
 };
 
 const CardRow: React.FC<CardCount> = props => {
+    const manaSymbols = parseManaCost(props.manaCost);
+
     return (
         <ListItem>
             <ListItemIcon>{props.count}</ListItemIcon>
             <ListItemText primary={props.displayName} />
-            <ListItemIcon>
-                <Mana symbol="6" cost />
-                <Mana symbol="b" cost />
-                <Mana symbol="b" cost />
+            <ListItemIcon sx={{ justifyContent: "flex-end" }}>
+                {manaSymbols.map(symbol => 
+                    <Mana symbol={symbol} cost />)}
             </ListItemIcon>
         </ListItem>
     );
 };
+
+function parseManaCost(manaCost: string) {
+    return manaCost.split("")
+        .filter(x => x != "{" && x != "}")
+        .map(x => x.toLowerCase() as ManaSymbol);
+}

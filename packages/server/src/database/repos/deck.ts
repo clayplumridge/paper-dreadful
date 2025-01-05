@@ -24,6 +24,7 @@ export class DeckRepo {
                     "cards.scryfallUrl",
                     "cards.scryfallId",
                     "cards.type",
+                    "cards.manaCost",
                 ])
                 .execute()
         );
