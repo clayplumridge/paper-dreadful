@@ -5,6 +5,7 @@ declare global {
         interface ProcessEnv {
             API_SERVER_PORT: number;
             CLUSTER_SIZE: number;
+            CORS_ALLOWED_ORIGIN: string;
             DATABASE_HOST: string;
             DATABASE_PORT: number;
             DATABASE_USERNAME: string;

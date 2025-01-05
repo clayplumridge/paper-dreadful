@@ -5,26 +5,37 @@
 
 import type { ColumnType } from "kysely";
 
+export type Decimal = ColumnType<string, number | string>;
+
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>;
 
+export interface Ban {
+    cardId: string;
+    formatId: number;
+    id: Generated<number>;
+    reasoning: string | null;
+}
+
 export interface CardEntry {
-    cardId: number;
+    cardId: string;
     count: number;
     deckId: number;
 }
 
 export interface CardPrice {
-    cardId: number;
+    cardId: string;
     formatId: number;
-    priceInUsd: number;
+    priceInUsd: Decimal;
 }
 
 export interface Card {
+    colorIdentity: string;
     displayName: string;
-    id: Generated<number>;
     imageUrl: string;
+    manaCost: string;
+    scryfallId: string;
     scryfallUrl: string;
 }
 
@@ -39,8 +50,9 @@ export interface Deck {
 
 export interface Format {
     createdAt: Generated<Date>;
-    displayName: string | null;
+    displayName: string;
     id: Generated<number>;
+    ownerId: number;
 }
 
 export interface Session {
@@ -57,6 +69,7 @@ export interface User {
 }
 
 export interface DB {
+    bans: Ban;
     cardEntries: CardEntry;
     cardPrices: CardPrice;
     cards: Card;

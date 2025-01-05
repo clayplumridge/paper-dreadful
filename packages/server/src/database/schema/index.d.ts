@@ -1,6 +1,7 @@
 import { Insertable, Selectable, Updateable } from "kysely";
 
 import {
+    Ban as SchemaBan,
     Card as SchemaCard,
     CardEntry as SchemaCardEntry,
     CardPrice as SchemaCardPrice,
@@ -35,3 +36,6 @@ export type FormatUpdate = Updateable<SchemaFormat>;
 export type User = Selectable<SchemaUser>;
 export type NewUser = Insertable<SchemaUser>;
 export type UserUpdate = Updateable<SchemaUser>;
+
+export type Ban = Selectable<SchemaBan>;
+export type NewBan = Insertable<SchemaBan>;

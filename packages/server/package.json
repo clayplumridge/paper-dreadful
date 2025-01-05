@@ -4,11 +4,13 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "tsc",
-        "start:dev": "ts-node -r tsconfig-paths/register src/index.ts",
+        "start:dev": "tsx src/index.ts",
         "kysely-gen": "kysely-codegen --out-file ./src/database/schema/schema_gen.d.ts --camel-case --singular && npx eslint ./src/database/schema/schema_gen.d.ts --fix"
     },
     "devDependencies": {
+        "@scryfall/api-types": "^1.0.0-alpha.4",
         "@types/cookie-parser": "^1.4.5",
+        "@types/cors": "^2",
         "@types/express": "^4.17.20",
         "@types/express-mysql-session": "^3.0.6",
         "@types/express-session": "^1.17.9",
@@ -16,12 +18,14 @@
         "@types/passport": "^1.0.14",
         "@types/passport-google-oauth20": "^2.0.13",
         "kysely-codegen": "^0.17.0",
-        "ts-node": "^10.9.1",
-        "tsconfig-paths": "^4.2.0"
+        "tsconfig-paths": "^4.2.0",
+        "tsx": "^4.19.2"
     },
     "dependencies": {
         "@types/uuid": "^9.0.8",
+        "axios": "^1.7.9",
         "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
         "express-async-handler": "^1.2.0",

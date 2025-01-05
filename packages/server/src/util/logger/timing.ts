@@ -16,11 +16,12 @@ export function requestTime(
         getLogger("express.request")
             .timing(
                 {
-                    duration,
-                    end: new Date(endTime),
-                    route: req.url,
-                    start: new Date(requestTime),
                     requestId: req.id,
+                    duration,
+                    start: new Date(requestTime),
+                    end: new Date(endTime),
+                    method: req.method,
+                    route: (req.baseUrl ?? "") + req.path,
                 },
                 "timing"
             );

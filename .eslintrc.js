@@ -9,7 +9,9 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     parserOptions: {
         tsconfigRootDir: __dirname,
-        project: ["./tsconfig.base.json", "./packages/*/tsconfig.json"],
+        project: [
+            "./tsconfig.base.json", "./packages/*/tsconfig.json", "./tsconfig.lint.json",
+        ],
     },
     plugins: [
         "@typescript-eslint", "simple-import-sort", "@stylistic", "import-newlines",
@@ -27,6 +29,7 @@ module.exports = {
         "@stylistic/eol-last": ["warn", "always"],
         "@stylistic/comma-dangle": ["warn", "always-multiline"],
         "@stylistic/function-call-argument-newline": ["warn", "consistent"],
+        "@stylistic/function-paren-newline": ["warn", "multiline-arguments"],
         "@stylistic/indent": ["warn", 4],
         "@stylistic/newline-per-chained-call": ["warn", { "ignoreChainWithDepth": 1 }],
         "@typescript-eslint/require-await": "off",

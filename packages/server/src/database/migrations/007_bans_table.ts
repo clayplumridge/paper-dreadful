@@ -1,15 +1,15 @@
-import { Kysely, sql } from "kysely";
+import { Kysely } from "kysely";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function up(db: Kysely<any>): Promise<void> {
-    await db.schema.createTable("formats")
+    await db.schema.createTable("bans")
         .addColumn("id", "serial", col => col.primaryKey())
-        .addColumn("display_name", "varchar(255)", col => col.notNull())
-        .addColumn("created_at", "timestamp", col => col.defaultTo(sql`now()`)
-            .notNull())
-        .addColumn("owner_id", "bigint", col => col.notNull()
+        .addColumn("format_id", "bigint", col => col.notNull()
             .unsigned())
-        .addForeignKeyConstraint("FK_formats_owner", ["owner_id"], "users", ["id"])
+        .addColumn("card_id", "varchar(36)", col => col.notNull())
+        .addColumn("reasoning", "varchar(1000)")
+        .addForeignKeyConstraint("FK_bans_card_id", ["card_id"], "cards", ["scryfall_id"])
+        .addForeignKeyConstraint("FK_bans_format_id", ["format_id"], "formats", ["id"])
         .execute();
 }
 

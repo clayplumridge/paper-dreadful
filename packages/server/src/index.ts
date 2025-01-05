@@ -1,12 +1,15 @@
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, { RequestHandler } from "express";
-import asyncHandler from "express-async-handler";
 import session from "express-session";
 import passport from "passport";
 
-import { getDatabaseClient, getSessionStore, runMigrations } from "./database";
+import { getSessionStore, runMigrations } from "./database";
 import { configure as configureEnv } from "./env";
+import { router as adminRouter } from "./routes/admin";
 import { router as authRouter } from "./routes/auth";
+import { router as deckRouter } from "./routes/deck";
+import { router as formatRouter } from "./routes/format";
 import { createCluster } from "./util/cluster";
 import { getLogger } from "./util/logger";
 import { requestTime } from "./util/logger/timing";
@@ -18,8 +21,10 @@ async function initWorker() {
     const app = express();
 
     app.use(requestId, requestTime);
+    app.use(cors({ credentials: true, origin: process.env.CORS_ALLOWED_ORIGIN }));
     app.use(cookieParser());
     app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
 
     // Authn and session middleware
     app.use(
@@ -33,12 +38,10 @@ async function initWorker() {
     app.use(passport.initialize() as RequestHandler);
     app.use(passport.session());
 
+    app.use("/admin", adminRouter());
     app.use("/auth", authRouter());
-
-    app.get("/deck", asyncHandler(async (req, res) => {
-        const result = await getDatabaseClient().decks.getDetailsById(1);
-        res.json(result);
-    }));
+    app.use("/deck", deckRouter());
+    app.use("/format", formatRouter());
 
     app.listen(process.env.API_SERVER_PORT, () => {
         getLogger("init")

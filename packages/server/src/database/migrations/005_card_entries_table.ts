@@ -5,11 +5,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     await db.schema.createTable("card_entries")
         .addColumn("deck_id", "bigint", col => col.notNull()
             .unsigned())
-        .addColumn("card_id", "bigint", col => col.notNull()
-            .unsigned())
+        .addColumn("card_id", "varchar(36)", col => col.notNull())
         .addPrimaryKeyConstraint("primary_key", ["deck_id", "card_id"])
         .addForeignKeyConstraint("FK_card_entries_deck_id", ["deck_id"], "decks", ["id"])
-        .addForeignKeyConstraint("FK_card_entries_card_id", ["card_id"], "cards", ["id"])
+        .addForeignKeyConstraint("FK_card_entries_card_id", ["card_id"], "cards", ["scryfall_id"])
         .addColumn("count", "int2", col => col.notNull())
         .addCheckConstraint("count_one_or_more", sql`count > 0`)
         .execute();
