@@ -38,4 +38,4 @@
 #### Start the application
 
 1. Run `yarn start:dev`
-2. Open your browser and navigate to `localhost:5001/auth/login-with-google`. If you complete the flow without seeing errors in Powershell, you're good to start developing!
+2. Open your browser and navigate to `localhost:1234`.
