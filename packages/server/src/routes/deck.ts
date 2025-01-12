@@ -144,5 +144,7 @@ function parseDeckBody(body: string) {
             const count = Number(row.shift()!);
             const cardName = row.join(" ");
             return { cardName, count };
-        });
+        })
+        // Safety check against accidental empty strings
+        .filter(cardCount => cardCount.cardName.length != 0);
 }

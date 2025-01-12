@@ -1,4 +1,10 @@
-import { Button, Container } from "@mui/material";
+import {
+    Button,
+    Container,
+    createTheme,
+    CssBaseline,
+    ThemeProvider,
+} from "@mui/material";
 import axios from "axios";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
@@ -13,6 +19,12 @@ import {
 import { DeckViewer } from "./deck/viewer";
 
 axios.defaults.withCredentials = true;
+
+const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+});
 
 const App: React.FC<unknown> = () => {
     const [displayText, setDisplayText] = React.useState<string>("");
@@ -38,23 +50,26 @@ const App: React.FC<unknown> = () => {
     }
 
     return (
-        <Container maxWidth="xl">
-            <Button onClick={() => void createFormat()} variant="outlined">
-                Create Format
-            </Button>
-            <Button onClick={() => void createDeck()} variant="outlined">
-                Create Deck
-            </Button>
-            <Button onClick={() => void doLogin()} variant="outlined">
-                Login
-            </Button>
-            <Button onClick={() => void fetchDeck()} variant="outlined">
-                Fetch deck
-            </Button>
-            <div>{displayText}</div>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <Container maxWidth="xl">
+                <Button onClick={() => void createFormat()} variant="outlined">
+                    Create Format
+                </Button>
+                <Button onClick={() => void createDeck()} variant="outlined">
+                    Create Deck
+                </Button>
+                <Button onClick={() => void doLogin()} variant="outlined">
+                    Login
+                </Button>
+                <Button onClick={() => void fetchDeck()} variant="outlined">
+                    Fetch deck
+                </Button>
+                <div>{displayText}</div>
 
-            {deckDetails && <DeckViewer deckDetails={deckDetails}/> }
-        </Container>
+                {deckDetails && <DeckViewer deckDetails={deckDetails}/> }
+            </Container>
+        </ThemeProvider>
     );
 };
 
@@ -62,7 +77,10 @@ function tryCreateDeck() {
     return axios.post<CreateDeckResponse>("http://localhost:5001/deck/create", {
         body:
             "4 Archon of Cruelty\n" +
-            "4 Persist",
+            "4 Persist\n" +
+            "4 Monastery Swiftspear\n" +
+            "2 Lightning Bolt\n" +
+            "4 Mishra's Bauble\n",
         displayName: "The Deckeroni",
         formatId: 1,
     } satisfies CreateDeckRequest);
@@ -76,7 +94,7 @@ function tryCreateFormat() {
 }
 
 function tryGetDeck() {
-    return axios.get<DeckDetailsResponse>("http://localhost:5001/deck/1");
+    return axios.get<DeckDetailsResponse>("http://localhost:5001/deck/3");
 }
 
 const container = document.getElementById("react-root")!;
