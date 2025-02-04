@@ -7,7 +7,7 @@ interface PriceDisplayProps {
     card: CardCount;
 }
 
-export const PriceDisplay: React.FC<PriceDisplayProps> = props => {
+export function PriceDisplay(props: PriceDisplayProps) {
     const {card} = props;
 
     return (
@@ -19,4 +19,4 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = props => {
             />
         </Tooltip>
     );
-};
+}

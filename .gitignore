@@ -5,3 +5,4 @@ yarn-error.log
 .yarn
 .env
 kysely-codegen.env
+.react-router/

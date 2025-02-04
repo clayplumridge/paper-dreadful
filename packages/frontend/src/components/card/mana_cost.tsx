@@ -14,13 +14,18 @@ export interface ManaCostProps {
     manaCost: string;
 }
 
-export const ManaCost: React.FC<ManaCostProps> = props => {
+export function ManaCost(props: ManaCostProps) {
     const manaSymbols = parseManaCost(props.manaCost);
 
     return (
         <ManaCostContainer>
-            {manaSymbols.map(symbol => 
-                <Mana cost symbol={symbol} />)}
+            {manaSymbols.map((symbol, idx) => (
+                <Mana
+                    cost
+                    key={idx}
+                    symbol={symbol}
+                />
+            ))}
         </ManaCostContainer>
     );
-};
+}

@@ -1,9 +1,12 @@
 // Disabling promise checks to allow async/await in void functions that use 'done'
 // Makes writing handlers for passport way easier
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import express from "express";
+import express, { Response } from "express";
+import asyncHandler from "express-async-handler";
 import passport from "passport";
 import { Strategy as GoogleOauthStrategy } from "passport-google-oauth20";
+
+import { CurrentUserResponse } from "@/common/contracts";
 
 import { getDatabaseClient } from "../database";
 import { getLogger } from "../util/logger";
@@ -79,6 +82,26 @@ export function router() {
             failureRedirect: "hell.gov",
         })
     );
+
+    router.get("/current", asyncHandler(
+        async (req, res: Response<CurrentUserResponse>) => {
+            if(req.user) {
+                res.json({ type: "loggedin", user: req.user });
+            } else {
+                res.json({ type: "loggedout" });
+            }
+        }
+    ));
+
+    router.delete("/logout", asyncHandler(
+        async (req, res) => {
+            if(req.session) {
+                req.session.destroy(() => {
+                    res.json({ status: "success" });
+                });
+            }
+        }
+    ));
 
     return router;
 }

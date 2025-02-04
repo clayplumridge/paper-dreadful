@@ -5,15 +5,16 @@ import {
     ListItemIcon,
     ListItemText,
     ListSubheader,
+    Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import React from "react";
 
 import { CardCount, DeckDetailsResponse } from "@/common/contracts";
 
-import { ManaCost } from "../components/card/mana_cost";
-import { PriceDisplay } from "../components/card/price";
-import { parseManaCostToCmc, sortByCmc } from "../util/mana";
+import { parseManaCostToCmc, sortByCmc } from "../../util/mana";
+import { ManaCost } from "../card/mana_cost";
+import { PriceDisplay } from "../card/price";
 import { CurveGraph } from "./curve";
 
 export interface DeckViewerProps {
@@ -39,13 +40,14 @@ const DeckViewerList = styled(List)(() => ({
     },
 }));
 
-export const DeckViewer: React.FC<DeckViewerProps> = props => {
+export function DeckViewer(props: DeckViewerProps) {
     const [currentCardImage, setCurrentCardImage] = React.useState(props.deckDetails.cards[0].imageUrl ?? ".png");
 
     const groups = groupByCardType(props.deckDetails.cards);
 
     return (
         <Box className="flex-column">
+            <Typography variant="h2">{props.deckDetails.displayName}</Typography>
             <Box className="flex-row flex-grow">
                 <CardDisplay src={currentCardImage} />
                 <DeckViewerList className="flex-column flex-grow">
@@ -56,6 +58,7 @@ export const DeckViewer: React.FC<DeckViewerProps> = props => {
                                     <CardGroup
                                         cards={sortByCmc(cards)}
                                         header={header}
+                                        key={header}
                                         onCardHover={card => setCurrentCardImage(card.imageUrl)}
                                     />
                                 ))
@@ -67,7 +70,7 @@ export const DeckViewer: React.FC<DeckViewerProps> = props => {
             </Box>
         </Box>
     );
-};
+}
 
 interface CardCountWithCmc extends CardCount {
     cmc: number;
@@ -94,29 +97,36 @@ interface CardGroupProps {
     onCardHover?: (card: CardCount) => void;
 }
 
-const CardGroup: React.FC<CardGroupProps> = props => {
+function CardGroup(props: CardGroupProps) {
     const subheaderId = `${props.header}-list-subheader`;
 
     return (
         <List
             aria-labelledby={subheaderId}
             dense
+            key={subheaderId}
             subheader={
                 <ListSubheader id={subheaderId}>{props.header}</ListSubheader>
             }
             sx={{ maxWidth: "360px" }}
         >
-            {props.cards.map(card => <CardRow card={card} onHover={props.onCardHover} />)}
+            {props.cards.map(card => (
+                <CardRow
+                    card={card}
+                    key={card.displayName}
+                    onHover={props.onCardHover}
+                />
+            ))}
         </List>
     );
-};
+}
 
 interface CardRowProps {
     card: CardCount;
     onHover?: (card: CardCount) => void;
 }
 
-const CardRow: React.FC<CardRowProps> = props => {
+function CardRow(props: CardRowProps) {
     const {card, onHover} = props;
 
     return (
@@ -137,4 +147,4 @@ const CardRow: React.FC<CardRowProps> = props => {
             </ListItemIcon>
         </ListItem>
     );
-};
+}

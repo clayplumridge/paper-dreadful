@@ -6,10 +6,12 @@ import passport from "passport";
 
 import { getSessionStore, runMigrations } from "./database";
 import { configure as configureEnv } from "./env";
-import { router as adminRouter } from "./routes/admin";
-import { router as authRouter } from "./routes/auth";
-import { router as deckRouter } from "./routes/deck";
-import { router as formatRouter } from "./routes/format";
+import {
+    adminRouter,
+    authRouter,
+    deckRouter,
+    formatRouter,
+} from "./routes";
 import { createCluster } from "./util/cluster";
 import { getLogger } from "./util/logger";
 import { requestTime } from "./util/logger/timing";

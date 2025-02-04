@@ -4,13 +4,13 @@ import React from "react";
 
 import { CardCount } from "@/common/contracts";
 
-import { parseManaCostToCmc } from "../util/mana";
+import { parseManaCostToCmc } from "../../util/mana";
 
 export interface CurveGraphProps {
     cards: CardCount[];
 }
 
-export const CurveGraph: React.FC<CurveGraphProps> = props => {
+export function CurveGraph(props: CurveGraphProps) {
     const dataSet = toDataSet(props.cards);
 
     return (
@@ -34,7 +34,7 @@ export const CurveGraph: React.FC<CurveGraphProps> = props => {
             xAxis={[{ scaleType: "band", dataKey: "cmc" }]}
         />
     );
-};
+}
 
 interface DataSetEntry extends DatasetElementType<string | number | undefined> {
     cmc: number;
