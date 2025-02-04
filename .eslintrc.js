@@ -51,5 +51,6 @@ module.exports = {
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/no-unsafe-argument": "off",
         "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-floating-promises": "off",
     },
 };

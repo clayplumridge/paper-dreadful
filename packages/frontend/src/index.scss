@@ -44,27 +44,3 @@ img {
 .align-center {
     align-items: center;
 }
-
-.manacost-container > :not(:first-child) {
-    margin-left: 0.25em;
-}
-
-$card-wh-aspect-ratio: 1.395;
-$card-width: 200px;
-$card-height: $card-width * $card-wh-aspect-ratio;
-
-img.hovered-card {
-    object-fit: contain;
-    width: $card-width;
-    margin-right: 2em;
-}
-
-.deck-viewer-list {
-    max-height: $card-height * 2;
-    align-content: flex-start;
-    
-    > ul {
-        min-width: 400px;
-        margin-right: 2em;
-    }
-}

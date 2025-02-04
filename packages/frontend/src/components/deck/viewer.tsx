@@ -1,35 +1,56 @@
 import {
     Box,
-    Chip,
     List,
     ListItem,
     ListItemIcon,
     ListItemText,
     ListSubheader,
-    Tooltip,
+    Typography,
 } from "@mui/material";
-import { Mana } from "@saeris/react-mana";
+import { styled } from "@mui/system";
 import React from "react";
 
 import { CardCount, DeckDetailsResponse } from "@/common/contracts";
 
-import { parseManaCost, parseManaCostToCmc, sortByCmc } from "../util/mana";
+import { parseManaCostToCmc, sortByCmc } from "../../util/mana";
+import { ManaCost } from "../card/mana_cost";
+import { PriceDisplay } from "../card/price";
 import { CurveGraph } from "./curve";
 
 export interface DeckViewerProps {
     deckDetails: DeckDetailsResponse;
 }
 
-export const DeckViewer: React.FC<DeckViewerProps> = props => {
+const cardAspectRatio = 1.395;
+const cardWidth = 200;
+const cardHeight = cardWidth * cardAspectRatio;
+
+const CardDisplay = styled("img")(() => ({
+    marginRight: "2em",
+    objectFit: "contain",
+    width: cardWidth,
+}));
+
+const DeckViewerList = styled(List)(() => ({
+    alignContent: "flex-start",
+    maxHeight: cardHeight * 2,
+    "> ul": {
+        marginRight: "2em",
+        minWidth: 400,
+    },
+}));
+
+export function DeckViewer(props: DeckViewerProps) {
     const [currentCardImage, setCurrentCardImage] = React.useState(props.deckDetails.cards[0].imageUrl ?? ".png");
 
     const groups = groupByCardType(props.deckDetails.cards);
 
     return (
         <Box className="flex-column">
+            <Typography variant="h2">{props.deckDetails.displayName}</Typography>
             <Box className="flex-row flex-grow">
-                <img className="hovered-card" src={currentCardImage} />
-                <List className="flex-column flex-grow deck-viewer-list">
+                <CardDisplay src={currentCardImage} />
+                <DeckViewerList className="flex-column flex-grow">
                     {
                         Array.from(groups.entries())
                             .map(([header, cards]) =>
@@ -37,18 +58,19 @@ export const DeckViewer: React.FC<DeckViewerProps> = props => {
                                     <CardGroup
                                         cards={sortByCmc(cards)}
                                         header={header}
+                                        key={header}
                                         onCardHover={card => setCurrentCardImage(card.imageUrl)}
                                     />
                                 ))
                     }
-                </List>
+                </DeckViewerList>
             </Box>
             <Box className="flex-row align-center">
                 <CurveGraph cards={props.deckDetails.cards} />
             </Box>
         </Box>
     );
-};
+}
 
 interface CardCountWithCmc extends CardCount {
     cmc: number;
@@ -75,31 +97,37 @@ interface CardGroupProps {
     onCardHover?: (card: CardCount) => void;
 }
 
-const CardGroup: React.FC<CardGroupProps> = props => {
+function CardGroup(props: CardGroupProps) {
     const subheaderId = `${props.header}-list-subheader`;
 
     return (
         <List
             aria-labelledby={subheaderId}
             dense
+            key={subheaderId}
             subheader={
                 <ListSubheader id={subheaderId}>{props.header}</ListSubheader>
             }
             sx={{ maxWidth: "360px" }}
         >
-            {props.cards.map(card => <CardRow card={card} onHover={props.onCardHover} />)}
+            {props.cards.map(card => (
+                <CardRow
+                    card={card}
+                    key={card.displayName}
+                    onHover={props.onCardHover}
+                />
+            ))}
         </List>
     );
-};
+}
 
 interface CardRowProps {
     card: CardCount;
     onHover?: (card: CardCount) => void;
 }
 
-const CardRow: React.FC<CardRowProps> = props => {
+function CardRow(props: CardRowProps) {
     const {card, onHover} = props;
-    const manaSymbols = parseManaCost(card.manaCost);
 
     return (
         <ListItem slotProps={{
@@ -111,19 +139,12 @@ const CardRow: React.FC<CardRowProps> = props => {
         >
             <ListItemIcon>{card.count}</ListItemIcon>
             <ListItemText primary={card.displayName} />
-            <ListItemIcon className="manacost-container" sx={{ justifyContent: "flex-end" }}>
-                {manaSymbols.map(symbol => 
-                    <Mana cost symbol={symbol} />)}
+            <ListItemIcon sx={{ justifyContent: "flex-end "}}>
+                <ManaCost manaCost={card.manaCost} />
             </ListItemIcon>
-            <ListItemIcon sx={{ justifyContent: "flex-end", justifySelf: "flex-end", marginLeft: "0.25em" }}>
-                <Tooltip title={`${card.count} @ $${card.priceInUsd.toFixed(2)}`}>
-                    <Chip
-                        label={`$${(card.priceInUsd * card.count).toFixed(2)}`}
-                        size="small"
-                        variant="outlined"
-                    />
-                </Tooltip>
+            <ListItemIcon sx={{ justifyContent: "flex-end", marginLeft: "0.25em" }}>
+                <PriceDisplay card={card} />
             </ListItemIcon>
         </ListItem>
     );
-};
+}
