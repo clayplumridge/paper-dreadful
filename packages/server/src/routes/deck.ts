@@ -10,7 +10,7 @@ import {
 
 import { getDatabaseClient } from "../database";
 import { getLogger } from "../util/logger";
-import { nonNullKeys } from "../util/typings";
+import { allConcreteKeys, nonNullKeys } from "../util/typings";
 import { PostRequest } from ".";
 
 export function router() {
@@ -114,7 +114,7 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
         return 500;
     }
 
-    return {
+    return allConcreteKeys({
         id: deckId,
         displayName: displayName,
         cards: cards.map(x => {
@@ -128,11 +128,19 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
                 manaCost: x.manaCost,
             };
         }),
+        format: {
+            id: summary.formatId,
+            displayName: summary.formatDisplayName,
+            owner: {
+                id: summary.formatOwnerId,
+                displayName: summary.formatDisplayName,
+            },
+        },
         ownerDetails: {
             id: summary.ownerId,
             displayName: userDisplayName,
         },
-    };
+    });
 }
 
 function parseDeckBody(body: string) {

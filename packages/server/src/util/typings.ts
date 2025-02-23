@@ -1,4 +1,4 @@
-type NoNullKeys<T> = { [K in keyof T]: Exclude<T[K], null> };
+type NoNullKeys<T> = { [K in keyof T]: NoNullKeys<Exclude<T[K], null>> };
 export function nonNullKeys<T>(promise: Promise<T[]>): Promise<NoNullKeys<T>[]>;
 export function nonNullKeys<T>(promise: Promise<T>): Promise<NoNullKeys<T>>;
 export function nonNullKeys<T>(arr: T[]): NoNullKeys<T>[];
@@ -15,3 +15,5 @@ export function allConcreteKeys<T>(obj: T): AllConcreteKeys<T>;
 export function allConcreteKeys(obj: unknown) {
     return obj;
 }
+
+export type Unpromise<T> = T extends Promise<infer U> ? U : T;

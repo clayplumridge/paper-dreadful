@@ -19,7 +19,7 @@ export function CurveGraph(props: CurveGraphProps) {
             dataset={dataSet.data}
             height={300}
             series={
-                dataSet.seenTypes.map(x => ({ dataKey: x, label: x, stack: "cmc"}))
+                dataSet.typeKeys.map(x => ({ dataKey: x, label: x, stack: "cmc"}))
             }
             slotProps={{
                 legend: {
@@ -41,7 +41,7 @@ interface DataSetEntry extends DatasetElementType<string | number | undefined> {
     [cardType: string]: number;
 }
 
-function toDataSet(cards: CardCount[]): { data: DataSetEntry[], seenTypes: string[] } {
+function toDataSet(cards: CardCount[]): { data: DataSetEntry[], typeKeys: string[] } {
     const seenTypes = new Set<string>();
 
     const map = cards.reduce((data, curr) => {
@@ -49,9 +49,7 @@ function toDataSet(cards: CardCount[]): { data: DataSetEntry[], seenTypes: strin
         let entry = data.get(cmc);
 
         if(!entry) {
-            entry = {
-                cmc: parseManaCostToCmc(curr.manaCost),
-            };
+            entry = {cmc};
             data.set(cmc, entry);
         }
 
@@ -61,5 +59,19 @@ function toDataSet(cards: CardCount[]): { data: DataSetEntry[], seenTypes: strin
         return data;
     }, new Map<number, DataSetEntry>());
 
-    return { data: [...map.values()].sort((a, b) => a.cmc - b.cmc), seenTypes: [...seenTypes] };
+    const typeKeys = [...seenTypes].sort();
+    return {
+        data: [...map.values()].map(
+            val => {
+                // Populates all missing typeKeys
+                return typeKeys.reduce((prev, curr) => {
+                    const merged = {...prev};
+                    merged[curr] = val[curr] ?? 0;
+                    return merged;
+                }, {cmc: val.cmc} as DataSetEntry);
+            }
+        )
+            .sort((a, b) => a.cmc - b.cmc),
+        typeKeys,
+    };
 }

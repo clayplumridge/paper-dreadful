@@ -1,12 +1,18 @@
-import express, { Response } from "express";
+import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 
-import { CreateFormatRequest, CreateFormatResponse } from "@/common/contracts";
+import {
+    CreateFormatRequest,
+    CreateFormatResponse,
+    FormatDetailsRequest,
+    FormatDetailsResponse,
+    FormatSearchResponse,
+} from "@/common/contracts";
 
 import { getDatabaseClient } from "../database";
 import { getCardsWithPrices } from "../scryfall";
 import { getLogger } from "../util/logger";
-import { allConcreteKeys } from "../util/typings";
+import { Unpromise } from "../util/typings";
 import { PostRequest } from ".";
 
 export function router() {
@@ -34,18 +40,8 @@ export function router() {
                 const cards = await getCardsWithPrices();
                 await getDatabaseClient().cards.importScryfallCardPricesForFormat(cards, dbResult);
 
-                // We can confirm this is defined because we just created it
-                const details = await allConcreteKeys(getDatabaseClient().formats.getDetailsById(dbResult));
-
-                res.json({details: {
-                    bannedCardNames,
-                    displayName: details.displayName,
-                    formatId: details.id,
-                    owner: {
-                        id: details.ownerId,
-                        displayName: details.ownerDisplayName,
-                    },
-                }});
+                const details = await getDatabaseClient().formats.getDetailsById(dbResult);
+                res.json({ details: dbDetailsToResponse(details) });
 
                 return;
             }
@@ -55,5 +51,44 @@ export function router() {
         }
     ));
 
+    router.get("/search", asyncHandler(
+        async (req: Request<{}, {}, {}, {q: string}>, res: Response<FormatSearchResponse>) => {
+            const result = await getDatabaseClient().formats.search(req.query.q);
+            res.json(searchResultToResponse(result));
+        }
+    ));
+
+    router.get("/:id", asyncHandler(
+        async (req: Request<FormatDetailsRequest>, res: Response<FormatDetailsResponse>) => {
+            const details = await getDatabaseClient().formats.getDetailsById(req.params.id);
+            res.json(dbDetailsToResponse(details));
+        }
+    ));
+
     return router;
+}
+
+type DbDetails = Unpromise<ReturnType<ReturnType<typeof getDatabaseClient>["formats"]["getDetailsById"]>>;
+function dbDetailsToResponse(details: DbDetails): FormatDetailsResponse {
+    return {
+        bannedCards: details.bannedCards,
+        displayName: details.displayName,
+        formatId: details.id,
+        owner: {
+            id: details.ownerId,
+            displayName: details.ownerDisplayName,
+        },
+    };
+}
+
+type DbSearchResult = Unpromise<ReturnType<ReturnType<typeof getDatabaseClient>["formats"]["search"]>>;
+function searchResultToResponse(searchResult: DbSearchResult) {
+    return searchResult.map(x => ({
+        displayName: x.displayName,
+        formatId: x.id,
+        owner: {
+            id: x.ownerId,
+            displayName: x.displayName,
+        },
+    }));
 }
