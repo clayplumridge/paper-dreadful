@@ -129,6 +129,7 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
             };
         }),
         format: {
+            createdAt: summary.formatCreatedAt!.getTime(),
             id: summary.formatId,
             displayName: summary.formatDisplayName,
             owner: {

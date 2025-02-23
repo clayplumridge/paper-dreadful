@@ -9,6 +9,7 @@ import { configure as configureEnv } from "./env";
 import {
     adminRouter,
     authRouter,
+    cardRouter,
     deckRouter,
     formatRouter,
 } from "./routes";
@@ -42,6 +43,7 @@ async function initWorker() {
 
     app.use("/admin", adminRouter());
     app.use("/auth", authRouter());
+    app.use("/card", cardRouter());
     app.use("/deck", deckRouter());
     app.use("/format", formatRouter());
 

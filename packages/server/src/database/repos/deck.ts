@@ -43,6 +43,7 @@ export class DeckRepo {
                 "decks.updatedAt",
                 "decks.ownerId",
                 "owners.displayName as ownerDisplayName",
+                "formats.createdAt as formatCreatedAt",
                 "formats.displayName as formatDisplayName",
                 "formats.id as formatId",
                 "formats.ownerId as formatOwnerId",
