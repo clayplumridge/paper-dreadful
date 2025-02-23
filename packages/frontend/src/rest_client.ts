@@ -23,11 +23,7 @@ class RestClient {
     }
 
     async getDeck(deckId: number) {
-        const axiosPromise = axios.get<DeckDetailsResponse>(this.getUrl(`/deck/${deckId}`));
-        const delayPromise = new Promise<void>(resolve => setTimeout(() => resolve(), 3000));
-    
-        const [axiosResult] = await Promise.all([axiosPromise, delayPromise]);
-        return axiosResult.data;
+        return (await axios.get<DeckDetailsResponse>(this.getUrl(`/deck/${deckId}`))).data;
     }
 
     async getFormat(formatId: number) {

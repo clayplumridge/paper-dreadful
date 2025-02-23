@@ -9,6 +9,7 @@ import * as React from "react";
 import { useSearchParams } from "react-router";
 
 import { FormatBase, FormatDetailsResponse } from "@/common/contracts";
+import { delayPromise } from "@/common/util/promise";
 
 import { LoadingPage } from "../components/frame/loading_page";
 import { SelectSearch } from "../components/select_search";
@@ -47,6 +48,7 @@ function CreateDeckPage(props: CreateDeckPageProps) {
                 multiline
                 rows={10}
             />
+            <TextField size="small" variant="standard" />
         </Box>
     ); 
 }
@@ -64,8 +66,8 @@ function FormatPicker(props: FormatPickerProps) {
             renderMenuItem={format =>
                 /* Needs to be called as a function, not JSX as Select relies on having direct MenuItem children */
                 FormatRow({ format })}
-            search={searchText => getRestClient()
-                .searchFormats(searchText)}
+            search={searchText => delayPromise(getRestClient()
+                .searchFormats(searchText), 3000)}
             valueToDisplayText={x => x.displayName}
             valueToId={x => x.id}
         />

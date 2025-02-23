@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { DeckDetailsResponse } from "@/common/contracts";
+import { delayPromise } from "@/common/util/promise";
 
 import { DeckViewer } from "../components/deck/viewer";
 import { LoadingPage } from "../components/frame/loading_page";
@@ -9,8 +10,8 @@ import { getRestClient } from "../rest_client";
 export function DeckView() {
     return (
         <LoadingPage promises={() => [
-            getRestClient()
-                .getDeck(3),
+            delayPromise(getRestClient()
+                .getDeck(3), 3000),
         ]}
         >
             {([deckResponse]) => <DeckPage deck={deckResponse} />}
