@@ -72,8 +72,9 @@ type DbDetails = Unpromise<ReturnType<ReturnType<typeof getDatabaseClient>["form
 function dbDetailsToResponse(details: DbDetails): FormatDetailsResponse {
     return {
         bannedCards: details.bannedCards,
+        createdAt: details.createdAt.getTime(),
         displayName: details.displayName,
-        formatId: details.id,
+        id: details.id,
         owner: {
             id: details.ownerId,
             displayName: details.ownerDisplayName,
@@ -84,8 +85,9 @@ function dbDetailsToResponse(details: DbDetails): FormatDetailsResponse {
 type DbSearchResult = Unpromise<ReturnType<ReturnType<typeof getDatabaseClient>["formats"]["search"]>>;
 function searchResultToResponse(searchResult: DbSearchResult) {
     return searchResult.map(x => ({
+        createdAt: x.createdAt.getTime(),
         displayName: x.displayName,
-        formatId: x.id,
+        id: x.id,
         owner: {
             id: x.ownerId,
             displayName: x.displayName,

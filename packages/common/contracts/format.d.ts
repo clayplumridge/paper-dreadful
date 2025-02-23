@@ -1,4 +1,6 @@
 export interface FormatBase {
+    /** Epoch ms */
+    createdAt: number;
     displayName: string;
     id: number;
     owner: {

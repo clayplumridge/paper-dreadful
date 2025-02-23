@@ -1,4 +1,4 @@
-type NoNullKeys<T> = { [K in keyof T]: NoNullKeys<Exclude<T[K], null>> };
+type NoNullKeys<T> = T extends Function ? T : { [K in keyof T]: NoNullKeys<Exclude<T[K], null>> };
 export function nonNullKeys<T>(promise: Promise<T[]>): Promise<NoNullKeys<T>[]>;
 export function nonNullKeys<T>(promise: Promise<T>): Promise<NoNullKeys<T>>;
 export function nonNullKeys<T>(arr: T[]): NoNullKeys<T>[];
