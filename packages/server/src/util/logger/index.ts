@@ -31,6 +31,16 @@ export interface Logger {
     info: (payload: unknown, action?: string) => void;
     timing: (payload: TimingPayload, action?: string) => void;
     warn: (payload: unknown, action?: string) => void;
+    scope: (action: string) => ScopedLogger;
+}
+
+/** A Logger that's been scoped to a specific Action. */
+export interface ScopedLogger {
+    debug: (payload: unknown) => void;
+    error: (payload: unknown) => void;
+    info: (payload: unknown) => void;
+    timing: (payload: TimingPayload) => void;
+    warn: (payload: unknown) => void;
 }
 
 const memoizedLoggers: Record<string, Logger> = {};
@@ -103,5 +113,15 @@ class LoggerImpl implements Logger {
                 this.area
             }][${action}] ${inspect(payload)}`
         );
+    }
+
+    scope(action: string): ScopedLogger {
+        return {
+            debug: (payload: unknown) => this.debug(payload, action),
+            error: (payload: unknown) => this.error(payload, action),
+            info: (payload: unknown) => this.info(payload, action),
+            timing: (payload: TimingPayload) => this.timing(payload, action),
+            warn: (payload: unknown) => this.warn(payload, action),
+        };
     }
 }
