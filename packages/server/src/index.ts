@@ -30,12 +30,14 @@ async function initWorker() {
 
     // Authn and session middleware
     app.use(
+        // This isn't a promise but vscode hates it for some reason?
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         session({
             secret: process.env.EXPRESS_SESSION_SECRET,
             resave: true,
             saveUninitialized: true,
             store: getSessionStore(),
-        }) as express.RequestHandler
+        })
     );
     app.use(passport.initialize() as RequestHandler);
     app.use(passport.session());
