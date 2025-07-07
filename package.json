@@ -33,5 +33,5 @@
         "ts-jest": "^29.0.0",
         "typescript": "^5.0.0"
     },
-    "packageManager": "yarn@4.6.0"
+    "packageManager": "yarn@4.9.2"
 }

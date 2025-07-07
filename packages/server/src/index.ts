@@ -35,7 +35,7 @@ async function initWorker() {
             resave: true,
             saveUninitialized: true,
             store: getSessionStore(),
-        })
+        }) as express.RequestHandler
     );
     app.use(passport.initialize() as RequestHandler);
     app.use(passport.session());

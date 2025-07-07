@@ -2,5 +2,7 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "./dist",
+        // Deals with @types/qs being included in weird ways by deps.
+        "types": [],
     }
 }
