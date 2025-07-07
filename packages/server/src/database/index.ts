@@ -69,6 +69,7 @@ export const getSessionStore = memo(() => {
 export async function runMigrations() {
     const logger = getLogger("database")
         .scope("migration");
+        
     if(!cluster.isPrimary) {
         logger.warn("Db migration aborted; migrations were not run from the primary cluster node");
         return;
