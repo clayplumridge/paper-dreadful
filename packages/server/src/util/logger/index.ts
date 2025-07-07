@@ -9,6 +9,9 @@ export const enum TraceLevel {
     Warn = "warn",
 }
 
+/**
+ * Formal spec of a single log; used by auxiliary handlers (eg. writing to logs)
+ */
 export interface Trace {
     action: string;
     area: string;
@@ -62,7 +65,7 @@ const consoleLogMap: Record<TraceLevel, (message: string) => void> = {
 class LoggerImpl implements Logger {
     private readonly allowedActions: Set<string> | undefined;
 
-    constructor(private readonly area: string) {
+    constructor(private readonly area: string, private readonly traceHandler?: (trace: Trace) => void) {
         const allowedActionsConfigValue =
             process.env[`LOGGER_ALLOWED_ACTIONS_FOR_AREA_${area}`];
 
@@ -113,6 +116,15 @@ class LoggerImpl implements Logger {
                 this.area
             }][${action}] ${inspect(payload)}`
         );
+
+        this.traceHandler?.({
+            action,
+            area: this.area,
+            level: level,
+            nodeClusterId,
+            payload,
+            timestamp,
+        });
     }
 
     scope(action: string): ScopedLogger {
