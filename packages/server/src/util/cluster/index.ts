@@ -7,7 +7,8 @@ export async function createCluster(
     initWorker: () => Promise<void>,
     workers?: number
 ) {
-    const logger = getLogger("cluster");
+    const logger = getLogger("cluster")
+        .scope("init");
 
     if (cluster.isPrimary) {
         logger.info(`Primary process ${process.pid} started`);

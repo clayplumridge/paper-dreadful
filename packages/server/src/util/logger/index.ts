@@ -9,6 +9,9 @@ export const enum TraceLevel {
     Warn = "warn",
 }
 
+/**
+ * Formal spec of a single log; used by auxiliary handlers (eg. writing to logs)
+ */
 export interface Trace {
     action: string;
     area: string;
@@ -31,6 +34,16 @@ export interface Logger {
     info: (payload: unknown, action?: string) => void;
     timing: (payload: TimingPayload, action?: string) => void;
     warn: (payload: unknown, action?: string) => void;
+    scope: (action: string) => ScopedLogger;
+}
+
+/** A Logger that's been scoped to a specific Action. */
+export interface ScopedLogger {
+    debug: (payload: unknown) => void;
+    error: (payload: unknown) => void;
+    info: (payload: unknown) => void;
+    timing: (payload: TimingPayload) => void;
+    warn: (payload: unknown) => void;
 }
 
 const memoizedLoggers: Record<string, Logger> = {};
@@ -52,7 +65,7 @@ const consoleLogMap: Record<TraceLevel, (message: string) => void> = {
 class LoggerImpl implements Logger {
     private readonly allowedActions: Set<string> | undefined;
 
-    constructor(private readonly area: string) {
+    constructor(private readonly area: string, private readonly traceHandler?: (trace: Trace) => void) {
         const allowedActionsConfigValue =
             process.env[`LOGGER_ALLOWED_ACTIONS_FOR_AREA_${area}`];
 
@@ -103,5 +116,24 @@ class LoggerImpl implements Logger {
                 this.area
             }][${action}] ${inspect(payload)}`
         );
+
+        this.traceHandler?.({
+            action,
+            area: this.area,
+            level: level,
+            nodeClusterId,
+            payload,
+            timestamp,
+        });
+    }
+
+    scope(action: string): ScopedLogger {
+        return {
+            debug: (payload: unknown) => this.debug(payload, action),
+            error: (payload: unknown) => this.error(payload, action),
+            info: (payload: unknown) => this.info(payload, action),
+            timing: (payload: TimingPayload) => this.timing(payload, action),
+            warn: (payload: unknown) => this.warn(payload, action),
+        };
     }
 }
