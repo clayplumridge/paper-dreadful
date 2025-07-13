@@ -7,24 +7,18 @@ export function requestTime(
     res: express.Response,
     next: express.NextFunction
 ) {
-    const requestTime = Date.now();
+    const timing = getLogger("express.request")
+        .startTiming(
+            {
+                requestId: req.id,
+                method: req.method,
+                route: (req.baseUrl ?? "") + req.path,
+            }
+        );
 
     res.on("finish", () => {
-        const endTime = Date.now();
-        const duration = endTime - requestTime;
-
-        getLogger("express.request")
-            .timing(
-                {
-                    requestId: req.id,
-                    duration,
-                    start: new Date(requestTime),
-                    end: new Date(endTime),
-                    method: req.method,
-                    route: (req.baseUrl ?? "") + req.path,
-                },
-                "timing"
-            );
+        timing.addData({ responseCode: res.statusCode });
+        timing.submit();
     });
 
     next();
@@ -37,20 +31,12 @@ export function withTiming<T extends (...args: any[]) => any>(
     action?: string
 ): (...funcArgs: Parameters<T>) => ReturnType<T> {
     return (...args: Parameters<T>): ReturnType<T> => {
-        const start = Date.now();
+        const timing = getLogger(area)
+            .startTiming(undefined, action);
+            
         const result = func(args) as ReturnType<T>;
-        const end = Date.now();
-        const duration = end - start;
 
-        getLogger(area)
-            .timing(
-                {
-                    duration,
-                    end: new Date(end),
-                    start: new Date(start),
-                },
-                action
-            );
+        timing.submit();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return result;

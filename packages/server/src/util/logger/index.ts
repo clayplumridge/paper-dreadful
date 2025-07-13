@@ -22,7 +22,7 @@ export interface Trace {
 }
 
 export interface TimingPayload {
-    [extraProps: string]: unknown;
+    data?: Record<string, unknown>;
     duration: number;
     end: Date;
     start: Date;
@@ -34,7 +34,14 @@ export interface Logger {
     info: (payload: unknown, action?: string) => void;
     timing: (payload: TimingPayload, action?: string) => void;
     warn: (payload: unknown, action?: string) => void;
+    startTiming: (data?: Record<string, unknown>, action?: string) => Timing;
+
     scope: (action: string) => ScopedLogger;
+}
+
+export interface Timing {
+    addData: (data: Record<string, unknown>) => Timing;
+    submit: () => void;
 }
 
 /** A Logger that's been scoped to a specific Action. */
@@ -44,6 +51,7 @@ export interface ScopedLogger {
     info: (payload: unknown) => void;
     timing: (payload: TimingPayload) => void;
     warn: (payload: unknown) => void;
+    startTiming: (data?: Record<string, unknown>) => Timing;
 }
 
 const memoizedLoggers: Record<string, Logger> = {};
@@ -127,6 +135,25 @@ class LoggerImpl implements Logger {
         });
     }
 
+    public startTiming(data?: Record<string, unknown>, action?: string) {
+        const startMs = Date.now();
+        const payload: Omit<TimingPayload, "duration" | "end"> = { start: new Date(startMs), data };
+
+        const timing = {
+            addData: (newData: Record<string, unknown>) => {
+                payload.data = {...(payload.data ?? {}), ...newData };
+                return timing;
+            },
+            submit: () => {
+                const endMs = Date.now();
+                const duration = endMs - startMs;
+                this.timing({...payload, end: new Date(endMs), duration }, action);
+            },
+        };
+
+        return timing;
+    }
+
     scope(action: string): ScopedLogger {
         return {
             debug: (payload: unknown) => this.debug(payload, action),
@@ -134,6 +161,7 @@ class LoggerImpl implements Logger {
             info: (payload: unknown) => this.info(payload, action),
             timing: (payload: TimingPayload) => this.timing(payload, action),
             warn: (payload: unknown) => this.warn(payload, action),
+            startTiming: (data?: Record<string, unknown>) => this.startTiming(data, action),
         };
     }
 }
