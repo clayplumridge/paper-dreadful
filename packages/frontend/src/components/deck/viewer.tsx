@@ -22,11 +22,11 @@ export interface DeckViewerProps {
 }
 
 const cardAspectRatio = 1.395;
-const cardWidth = 200;
+const cardWidth = 250;
 const cardHeight = cardWidth * cardAspectRatio;
 
 const CardDisplay = styled("img")(() => ({
-    marginRight: "2em",
+    alignSelf: "center",
     objectFit: "contain",
     width: cardWidth,
 }));
@@ -43,13 +43,30 @@ const DeckViewerList = styled(List)(() => ({
 export function DeckViewer(props: DeckViewerProps) {
     const [currentCardImage, setCurrentCardImage] = React.useState(props.deckDetails.cards[0].imageUrl ?? ".png");
 
+    const totalPrice = "$" +
+        props.deckDetails.cards.reduce((prev, curr) => {
+            return prev + curr.count * curr.priceInUsd;
+        }, 0)
+            .toFixed(2);
+    const title = `${props.deckDetails.displayName}`;
+
     const groups = groupByCardType(props.deckDetails.cards);
 
     return (
         <Box className="flex-column">
-            <Typography variant="h2">{props.deckDetails.displayName}</Typography>
+            <Typography variant="h2">{title}</Typography>
             <Box className="flex-row flex-grow">
-                <CardDisplay src={currentCardImage} />
+                <Box className="flex-column">
+                    <Typography variant="subtitle1">
+                        {totalPrice}
+                    </Typography>
+                    <CardDisplay src={currentCardImage} />
+                    <CurveGraph
+                        cards={props.deckDetails.cards}
+                        hideLegend
+                        width={cardWidth}
+                    />
+                </Box>
                 <DeckViewerList className="flex-column flex-grow">
                     {
                         Array.from(groups.entries())
@@ -64,9 +81,6 @@ export function DeckViewer(props: DeckViewerProps) {
                                 ))
                     }
                 </DeckViewerList>
-            </Box>
-            <Box className="flex-row align-center">
-                <CurveGraph cards={props.deckDetails.cards} />
             </Box>
         </Box>
     );
