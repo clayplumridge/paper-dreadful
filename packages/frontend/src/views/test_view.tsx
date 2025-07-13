@@ -62,7 +62,9 @@ function tryCreateDeck() {
             "4 Persist\n" +
             "4 Monastery Swiftspear\n" +
             "2 Lightning Bolt\n" +
-            "4 Mishra's Bauble\n",
+            "4 Mishra's Bauble\n" +
+            "4 Beseech the Queen\n" +
+            "4 Thopter Foundry\n",
         displayName: "The Deckeroni",
         formatId: 1,
     } satisfies CreateDeckRequest);

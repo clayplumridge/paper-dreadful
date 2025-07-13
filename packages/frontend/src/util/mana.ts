@@ -1,15 +1,22 @@
 import { ManaSymbol } from "@saeris/react-mana";
 
 export function parseManaCost(manaCost: string) {
-    return manaCost.split("")
-        .filter(x => x != "{" && x != "}")
+    return manaCost.split("}")
+        .map(x => x.substring(1))
+        .filter(x => x != "")
+        .map(x => {
+            return x.replace("/", "");
+        })
         .map(x => x.toLowerCase() as ManaSymbol);
 }
 
 export function parseManaCostToCmc(manaCost: string) {
-    return manaCost.split("")
-        .filter(x => x != "{" && x != "}")
+    return parseManaCost(manaCost)
         .reduce((prev, curr) => {
+            if(curr.includes("/")) {
+                curr = curr.split("/")[0] as ManaSymbol;
+            }
+
             const asNumber = Number(curr);
             if(isNaN(asNumber)) {
                 return prev + 1;
