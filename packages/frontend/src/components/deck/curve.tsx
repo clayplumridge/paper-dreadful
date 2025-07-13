@@ -7,10 +7,15 @@ import { parseManaCostToCmc } from "../../util/mana";
 
 export interface CurveGraphProps {
     cards: CardCount[];
+    height?: number;
+    hideLegend?: boolean;
+    width?: number;
 }
 
 export function CurveGraph(props: CurveGraphProps) {
-    const [mapOfMaps, seenCmc] = props.cards
+    const { cards, height = 300, hideLegend = false, width = 200 } = props;
+
+    const [mapOfMaps, seenCmc] = cards
         .map(x => ({ ...x, cmc: parseManaCostToCmc(x.manaCost)}))
         .reduce(([mapOfMaps, seenCmc], curr) => {
             if(!mapOfMaps.has(curr.type)) {
@@ -33,15 +38,17 @@ export function CurveGraph(props: CurveGraphProps) {
 
     return (
         <BarChart
-            height={300}
+            height={height}
+            hideLegend={hideLegend}
+            margin={0}
             series={data}
             slotProps={{
                 legend: {
-                    direction: "horizontal",
-                    position: { vertical: "bottom", horizontal: "center" },
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "start" },
                 },
             }}
-            width={300}
+            width={width}
             xAxis={[{ scaleType: "band", data: cmcArray }]}
         />
     );
