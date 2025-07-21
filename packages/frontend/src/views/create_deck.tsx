@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router";
 import { FormatBase, FormatDetailsResponse } from "@/common/contracts";
 import { delayPromise } from "@/common/util/promise";
 
+import { DeckEditor } from "../components/deck/editor";
 import { LoadingPage } from "../components/frame/loading_page";
 import { SelectSearch } from "../components/select_search";
 import { getRestClient } from "../rest_client";
@@ -48,7 +49,7 @@ function CreateDeckPage(props: CreateDeckPageProps) {
                 multiline
                 rows={10}
             />
-            <TextField size="small" variant="standard" />
+            <DeckEditor />
         </Box>
     ); 
 }
