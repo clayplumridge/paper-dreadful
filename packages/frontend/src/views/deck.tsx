@@ -2,7 +2,6 @@ import * as React from "react";
 import { useParams } from "react-router";
 
 import { DeckDetailsResponse } from "@/common/contracts";
-import { delayPromise } from "@/common/util/promise";
 
 import { DeckViewer } from "../components/deck/viewer";
 import { LoadingPage } from "../components/frame/loading_page";
