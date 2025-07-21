@@ -33,14 +33,21 @@ export class DeckRepo {
     getSummaryById(id: number) {
         return this.db.selectFrom("decks")
             .where("decks.id", "=", id)
-            .leftJoin("users", "users.id", "decks.ownerId")
+            .leftJoin("users as owners", "owners.id", "decks.ownerId")
+            .leftJoin("formats", "formats.id", "decks.formatId")
+            .leftJoin("users as formatOwners", "formatOwners.id", "formats.ownerId")
             .select([
                 "decks.id",
                 "decks.createdAt",
                 "decks.displayName",
                 "decks.updatedAt",
                 "decks.ownerId",
-                "users.displayName as ownerDisplayName",
+                "owners.displayName as ownerDisplayName",
+                "formats.createdAt as formatCreatedAt",
+                "formats.displayName as formatDisplayName",
+                "formats.id as formatId",
+                "formats.ownerId as formatOwnerId",
+                "formatOwners.displayName as formatOwnerDisplayName",
             ])
             .executeTakeFirst();
     }

@@ -1,9 +1,12 @@
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import {
     AppBar as MuiAppBar,
     Avatar,
     Box,
     Button,
     IconButton,
+    ListItemIcon,
     Menu,
     MenuItem,
     styled,
@@ -91,9 +94,11 @@ function UserDetails(props: UserDetailsProps) {
                 }}
             >
                 <MenuItem key="profile">
+                    <ListItemIcon><PersonOutlineIcon /></ListItemIcon>
                     <Typography>Profile</Typography>
                 </MenuItem>
                 <MenuItem key="logout" onClick={handleLogout}>
+                    <ListItemIcon><LogoutIcon /></ListItemIcon>
                     <Typography>Logout</Typography>
                 </MenuItem>
             </Menu>

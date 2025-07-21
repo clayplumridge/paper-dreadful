@@ -1,3 +1,5 @@
+import { FormatBase } from "./format";
+
 export interface CardCount {
     scryfallId: string;
     displayName: string;
@@ -16,6 +18,7 @@ export interface DeckDetailsResponse {
     id: number;
     cards: CardCount[];
     displayName: string;
+    format: FormatBase;
     ownerDetails: {
         id: number;
         displayName: string;
