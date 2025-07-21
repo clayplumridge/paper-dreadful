@@ -67,12 +67,15 @@ export const getSessionStore = memo(() => {
 });
 
 export async function runMigrations() {
+    const logger = getLogger("database")
+        .scope("migration");
+        
     if(!cluster.isPrimary) {
+        logger.warn("Db migration aborted; migrations were not run from the primary cluster node");
         return;
     }
 
-    const logger = getLogger("database");
-    logger.info("Starting db migration", "migration");
+    logger.info("Starting db migration");
 
     const db = getKysely();
     const migrationFolder = path.join(__dirname, "migrations");
@@ -85,20 +88,20 @@ export async function runMigrations() {
         }),
     });
 
-    logger.info(`Running migrator against ${migrationFolder}`, "migration");
+    logger.info(`Running migrator against ${migrationFolder}`);
     const { error, results } = await migrator.migrateToLatest();
-    logger.info("Migrator complete", "migration");
+    logger.info("Migrator complete");
     results?.forEach(it => {
         if(it.status =="Success") {
-            logger.info(`Successfully executed migration ${it.migrationName}`, "migration");
+            logger.info(`Successfully executed migration ${it.migrationName}`);
         } else if(it.status == "Error") {
-            logger.error(`Failed to execute migration ${it.migrationName}`, "migration");
+            logger.error(`Failed to execute migration ${it.migrationName}`);
         }
     });
 
     if(error) {
         await db.destroy();
-        logger.error(`Database migration failed with error ${inspect(error)}`, "migration");
+        logger.error(`Database migration failed with error ${inspect(error)}`);
         throw new Error("Database migration failed");
     }
 }

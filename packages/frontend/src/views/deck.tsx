@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useParams } from "react-router";
 
 import { DeckDetailsResponse } from "@/common/contracts";
 import { delayPromise } from "@/common/util/promise";
@@ -8,10 +9,12 @@ import { LoadingPage } from "../components/frame/loading_page";
 import { getRestClient } from "../rest_client";
 
 export function DeckView() {
+    const { id } = useParams();
+
     return (
         <LoadingPage promises={() => [
-            delayPromise(getRestClient()
-                .getDeck(3), 3000),
+            getRestClient()
+                .getDeck(Number(id)),
         ]}
         >
             {([deckResponse]) => <DeckPage deck={deckResponse} />}

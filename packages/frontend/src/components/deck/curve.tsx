@@ -1,5 +1,4 @@
 import { BarChart } from "@mui/x-charts";
-import { DatasetElementType } from "@mui/x-charts/internals";
 import React from "react";
 
 import { CardCount } from "@/common/contracts";
@@ -8,70 +7,49 @@ import { parseManaCostToCmc } from "../../util/mana";
 
 export interface CurveGraphProps {
     cards: CardCount[];
+    height?: number;
+    hideLegend?: boolean;
+    width?: number;
 }
 
 export function CurveGraph(props: CurveGraphProps) {
-    const dataSet = toDataSet(props.cards);
+    const { cards, height = 300, hideLegend = false, width = 200 } = props;
+
+    const [mapOfMaps, seenCmc] = cards
+        .map(x => ({ ...x, cmc: parseManaCostToCmc(x.manaCost)}))
+        .reduce(([mapOfMaps, seenCmc], curr) => {
+            if(!mapOfMaps.has(curr.type)) {
+                mapOfMaps.set(curr.type, new Map());
+            }
+
+            const map = mapOfMaps.get(curr.type)!;
+            map.set(curr.cmc, (map.get(curr.cmc) ?? 0) + curr.count);
+            seenCmc.add(curr.cmc);
+
+            return [mapOfMaps, seenCmc];
+        }, [new Map(), new Set()] as [Map<string, Map<number, number>>, Set<number>]);
+
+
+    const cmcArray = Array.from(seenCmc)
+        .sort();
+
+    const data = Array.from(mapOfMaps.entries())
+        .map(([type, map]) => ({ data: cmcArray.map(cmc => map.get(cmc) ?? 0), stack: "cmc", label: type }));
 
     return (
-        <BarChart 
-            barLabel="value"
-            dataset={dataSet.data}
-            height={300}
-            series={
-                dataSet.typeKeys.map(x => ({ dataKey: x, label: x, stack: "cmc"}))
-            }
+        <BarChart
+            height={height}
+            hideLegend={hideLegend}
+            margin={0}
+            series={data}
             slotProps={{
                 legend: {
-                    direction: "row",
-                    position: { vertical: "bottom", horizontal: "middle" },
-                    labelStyle: { fontSize: "0.6em" },
-                    itemMarkHeight: 10,
-                    itemMarkWidth: 10,
+                    direction: "vertical",
+                    position: { vertical: "middle", horizontal: "start" },
                 },
             }}
-            width={300}
-            xAxis={[{ scaleType: "band", dataKey: "cmc" }]}
+            width={width}
+            xAxis={[{ scaleType: "band", data: cmcArray }]}
         />
     );
-}
-
-interface DataSetEntry extends DatasetElementType<string | number | undefined> {
-    cmc: number;
-    [cardType: string]: number;
-}
-
-function toDataSet(cards: CardCount[]): { data: DataSetEntry[], typeKeys: string[] } {
-    const seenTypes = new Set<string>();
-
-    const map = cards.reduce((data, curr) => {
-        const cmc = parseManaCostToCmc(curr.manaCost);
-        let entry = data.get(cmc);
-
-        if(!entry) {
-            entry = {cmc};
-            data.set(cmc, entry);
-        }
-
-        entry[`${curr.type}`] = (entry[`${curr.type}`] ?? 0) + curr.count;
-        seenTypes.add(curr.type);
-
-        return data;
-    }, new Map<number, DataSetEntry>());
-
-    const typeKeys = [...seenTypes].sort();
-    return {
-        data: [...map.values()].map(
-            val => {
-                // Populates all missing typeKeys
-                return typeKeys.reduce((prev, curr) => {
-                    const merged = {...prev};
-                    merged[curr] = val[curr] ?? 0;
-                    return merged;
-                }, {cmc: val.cmc} as DataSetEntry);
-            }
-        )
-            .sort((a, b) => a.cmc - b.cmc),
-        typeKeys,
-    };
 }
