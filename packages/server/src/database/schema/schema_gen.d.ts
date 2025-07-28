@@ -56,10 +56,20 @@ export interface Format {
     ownerId: number;
 }
 
+export interface Privilege {
+    displayName: string;
+    id: Generated<number>;
+}
+
 export interface Session {
     data: string | null;
     expires: number;
     sessionId: string;
+}
+
+export interface UserPrivilege {
+    privilegeId: number;
+    userId: number;
 }
 
 export interface User {
@@ -76,6 +86,8 @@ export interface DB {
     cards: Card;
     decks: Deck;
     formats: Format;
+    privileges: Privilege;
     sessions: Session;
+    userPrivileges: UserPrivilege;
     users: User;
 }

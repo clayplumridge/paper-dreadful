@@ -60,7 +60,7 @@ async function getPricesByOracleId() {
         const etchedPrice = card.prices.usd_etched ? Number(card.prices.usd_etched) : null;
         const possiblePrices = [
             nonfoilPrice, foilPrice, etchedPrice,
-        ].filter(x => x !== null);
+        ].filter(x => x !== null) as number[];
 
         const price = Math.min(...possiblePrices);
         const existingPrice = map.get(oracleId);
