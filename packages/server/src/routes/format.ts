@@ -10,46 +10,52 @@ import {
 } from "@/common/contracts";
 
 import { getDatabaseClient } from "../database";
+import { PRIVILEGES } from "../database/privileges";
 import { getCardsWithPrices } from "../scryfall";
 import { getLogger } from "../util/logger";
 import { Unpromise } from "../util/typings";
 import { PostRequest } from ".";
+import { guardWithPrivilege } from "./util/privileges";
 
 export function router() {
     const logger = getLogger("format");
     const router = express.Router();
 
-    router.post("/create", asyncHandler(
-        async (req: PostRequest<CreateFormatRequest>, res: Response<CreateFormatResponse>) => {
-            const ownerId = req.user?.id;
+    router.post(
+        "/create",
+        guardWithPrivilege(PRIVILEGES.CREATE_FORMAT),
+        asyncHandler(
+            async (req: PostRequest<CreateFormatRequest>, res: Response<CreateFormatResponse>) => {
+                const ownerId = req.user?.id;
 
-            if(!ownerId) {
-                logger.warn("Could not create format; user not logged in");
-                res.sendStatus(401);
-                return;
-            }
+                if(!ownerId) {
+                    logger.warn("Could not create format; user not logged in");
+                    res.sendStatus(401);
+                    return;
+                }
 
-            const { bannedCardNames, displayName } = req.body;
+                const { bannedCardNames, displayName } = req.body;
 
-            const dbResult = await getDatabaseClient().formats.create({
-                displayName,
-                ownerId,
-            }, bannedCardNames);
+                const dbResult = await getDatabaseClient().formats.create({
+                    displayName,
+                    ownerId,
+                }, bannedCardNames);
 
-            if(typeof dbResult == "number") {
-                const cards = await getCardsWithPrices();
-                await getDatabaseClient().cards.importScryfallCardPricesForFormat(cards, dbResult);
+                if(typeof dbResult == "number") {
+                    const cards = await getCardsWithPrices();
+                    await getDatabaseClient().cards.importScryfallCardPricesForFormat(cards, dbResult);
+                  
+                    const details = await getDatabaseClient().formats.getDetailsById(dbResult);
+                    res.json({ details: dbDetailsToResponse(details) });
 
-                const details = await getDatabaseClient().formats.getDetailsById(dbResult);
-                res.json({ details: dbDetailsToResponse(details) });
-
-                return;
-            }
+                    return;
+                }
 
             
-            res.json({ missingCardNames: dbResult.missing ?? [] });
-        }
-    ));
+                res.json({ missingCardNames: dbResult.missing ?? [] });
+            }
+        )
+    );
 
     router.get("/search", asyncHandler(
         async (req: Request<{}, {}, {}, {q: string}>, res: Response<FormatSearchResponse>) => {

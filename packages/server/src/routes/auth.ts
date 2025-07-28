@@ -16,6 +16,7 @@ declare global {
         interface User {
             id: number;
             displayName: string;
+            privileges: number[];
         }
     }
 }
@@ -46,7 +47,7 @@ export function router() {
                         .info(`Created new user with display name ${user.displayName}`, "newuser");
                 }
 
-                done(null, { id: user.id, displayName: user.displayName });
+                done(null, { id: user.id, displayName: user.displayName, privileges: user.privileges });
             }
         )
     );
@@ -67,7 +68,7 @@ export function router() {
                 );
             }
 
-            done(null, { id, displayName: user.displayName });
+            done(null, { id, displayName: user.displayName, privileges: user.privileges });
         } else {
             done("Failed to deserialize user: ID is not a number");
         }

@@ -8,7 +8,9 @@ import {
     DB as Database,
     Deck as SchemaDeck,
     Format as SchemaFormat,
+    Privilege as SchemaPrivilege,
     User as SchemaUser,
+    UserPrivilege as SchemaUserPrivilege,
 } from "./schema_gen";
 
 export {Database};
@@ -39,3 +41,9 @@ export type UserUpdate = Updateable<SchemaUser>;
 
 export type Ban = Selectable<SchemaBan>;
 export type NewBan = Insertable<SchemaBan>;
+
+export type Privilege = Selectable<SchemaPrivilege>;
+export type NewPrivilege = Insertable<SchemaPrivilege>
+
+export type UserPrivilege = Selectable<SchemaUserPrivilege>;
+export type NewUserPrivilege = Insertable<SchemaUserPrivilege>;

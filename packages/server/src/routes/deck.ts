@@ -9,9 +9,11 @@ import {
 } from "@/common/contracts";
 
 import { getDatabaseClient } from "../database";
+import { PRIVILEGES } from "../database/privileges";
 import { getLogger } from "../util/logger";
 import { allConcreteKeys, nonNullKeys } from "../util/typings";
 import { PostRequest } from ".";
+import { guardWithPrivilege } from "./util/privileges";
 
 export function router() {
     const router = express.Router();
@@ -30,69 +32,73 @@ export function router() {
         }
     ));
 
-    router.post("/create", asyncHandler(
-        async (req: PostRequest<CreateDeckRequest>, res: Response<CreateDeckResponse>) => {
-            const ownerId = req.user?.id;
+    router.post(
+        "/create",
+        guardWithPrivilege(PRIVILEGES.CREATE_DECK),
+        asyncHandler(
+            async (req: PostRequest<CreateDeckRequest>, res: Response<CreateDeckResponse>) => {
+                const ownerId = req.user?.id;
 
-            if(!ownerId) {
-                res.sendStatus(401);
-                return;
-            }
+                if(!ownerId) {
+                    res.sendStatus(401);
+                    return;
+                }
 
-            // Parsing and validation
-            const {body, displayName, formatId} = req.body;
-            const cards = parseDeckBody(body);
-            const {
-                missing: missingCards,
-                result: cardDetails,
-            } = await getDatabaseClient().cards.getByDisplayNames(cards.map(x => x.cardName));
+                // Parsing and validation
+                const {body, displayName, formatId} = req.body;
+                const cards = parseDeckBody(body);
+                const {
+                    missing: missingCards,
+                    result: cardDetails,
+                } = await getDatabaseClient().cards.getByDisplayNames(cards.map(x => x.cardName));
 
-            const bannedCardIds = await getDatabaseClient().decks.checkForBans(
-                formatId,
-                cardDetails.map(x => x.scryfallId)
-            );
+                const bannedCardIds = await getDatabaseClient().decks.checkForBans(
+                    formatId,
+                    cardDetails.map(x => x.scryfallId)
+                );
 
-            if(missingCards.length != 0 || bannedCardIds.length != 0) {
-                const idToNameMap = cardDetails.reduce((prev, curr) => {
-                    prev.set(curr.scryfallId, curr.displayName);
+                if(missingCards.length != 0 || bannedCardIds.length != 0) {
+                    const idToNameMap = cardDetails.reduce((prev, curr) => {
+                        prev.set(curr.scryfallId, curr.displayName);
+                        return prev;
+                    }, new Map<string, string>);
+
+                    res.json({
+                        missingCards: missingCards.length > 0
+                            ? missingCards
+                            : undefined,
+                        bannedCards: bannedCardIds.length > 0
+                            ? bannedCardIds.map(x => idToNameMap.get(x.scryfallId)!)
+                            : undefined,
+                    });
+                    return;
+                }
+
+                const nameToDetailsMap = cardDetails.reduce((prev, curr) => {
+                    prev.set(curr.displayName, curr);
                     return prev;
-                }, new Map<string, string>);
+                }, new Map<string, typeof cardDetails[0]>);
 
-                res.json({
-                    missingCards: missingCards.length > 0
-                        ? missingCards
-                        : undefined,
-                    bannedCards: bannedCardIds.length > 0
-                        ? bannedCardIds.map(x => idToNameMap.get(x.scryfallId)!)
-                        : undefined,
-                });
-                return;
+                // Actually doing the insert
+                const newDeckId = await getDatabaseClient().decks.create(
+                    { displayName, ownerId, formatId },
+                    cards.map(
+                        x => ({ cardId: nameToDetailsMap.get(x.cardName)!.scryfallId, count: x.count })
+                    )
+                );
+
+                if(!newDeckId) {
+                    res.status(500);
+                    return;
+                }
+
+                logger.info(`Successfully created new deck ID ${newDeckId}`);
+
+                // Deck was just created so we can assert that it's there
+                res.json({ details: await getDeckDetailsResponse(newDeckId) as DeckDetailsResponse });
             }
-
-            const nameToDetailsMap = cardDetails.reduce((prev, curr) => {
-                prev.set(curr.displayName, curr);
-                return prev;
-            }, new Map<string, typeof cardDetails[0]>);
-
-            // Actually doing the insert
-            const newDeckId = await getDatabaseClient().decks.create(
-                { displayName, ownerId, formatId },
-                cards.map(
-                    x => ({ cardId: nameToDetailsMap.get(x.cardName)!.scryfallId, count: x.count })
-                )
-            );
-
-            if(!newDeckId) {
-                res.status(500);
-                return;
-            }
-
-            logger.info(`Successfully created new deck ID ${newDeckId}`);
-
-            // Deck was just created so we can assert that it's there
-            res.json({ details: await getDeckDetailsResponse(newDeckId) as DeckDetailsResponse });
-        }
-    ));
+        )
+    );
 
     return router;
 }
