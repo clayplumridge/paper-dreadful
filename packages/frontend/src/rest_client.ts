@@ -1,6 +1,11 @@
 import axios from "axios";
 
-import { CurrentUserResponse, DeckDetailsResponse } from "@/common/contracts";
+import {
+    CurrentUserResponse,
+    DeckDetailsResponse,
+    FormatDetailsResponse,
+    FormatSearchResponse,
+} from "@/common/contracts";
 
 axios.defaults.withCredentials = true;
 
@@ -18,15 +23,19 @@ class RestClient {
     }
 
     async getDeck(deckId: number) {
-        const axiosPromise = axios.get<DeckDetailsResponse>(this.getUrl(`/deck/${deckId}`));
-        const delayPromise = new Promise<void>(resolve => setTimeout(() => resolve(), 3000));
-    
-        const [axiosResult] = await Promise.all([axiosPromise, delayPromise]);
-        return axiosResult.data;
+        return (await axios.get<DeckDetailsResponse>(this.getUrl(`/deck/${deckId}`))).data;
+    }
+
+    async getFormat(formatId: number) {
+        return (await axios.get<FormatDetailsResponse>(this.getUrl(`/format/${formatId}`))).data;
     }
 
     async logout() {
         return (await axios.delete<{}>(this.getUrl("/auth/logout"))).data;
+    }
+
+    async searchFormats(searchString: string) {
+        return (await axios.get<FormatSearchResponse>(this.getUrl(`/format/search?q=${searchString}`))).data;
     }
 
     private getUrl(path: string) {

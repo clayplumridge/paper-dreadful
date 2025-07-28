@@ -4,7 +4,7 @@ import React from "react";
 import { CardCount } from "@/common/contracts";
 
 interface PriceDisplayProps {
-    card: CardCount;
+    card: Pick<CardCount, "count" | "priceInUsd">;
 }
 
 export function PriceDisplay(props: PriceDisplayProps) {

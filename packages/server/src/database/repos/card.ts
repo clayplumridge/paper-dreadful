@@ -21,6 +21,22 @@ export class CardRepo {
         };
     }
 
+    async getPrice(cardId: string, formatId: number) {
+        return this.db.selectFrom("cardPrices")
+            .where("cardPrices.cardId", "=", cardId)
+            .where("cardPrices.formatId", "=", formatId)
+            .select(["cardPrices.priceInUsd"])
+            .executeTakeFirst();
+    }
+
+    async getPrices(cardIds: string[], formatId: number) {
+        return this.db.selectFrom("cardPrices")
+            .where("cardPrices.cardId", "in", cardIds)
+            .where("cardPrices.formatId", "=", formatId)
+            .select(["cardPrices.cardId", "cardPrices.priceInUsd"])
+            .execute();
+    }
+
     async importScryfallOracleCards(cards: ScryfallCard.Any[]) {
         const result = await this.db.insertInto("cards")
             .ignore()

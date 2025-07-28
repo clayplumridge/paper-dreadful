@@ -11,7 +11,7 @@ import {
 import { getDatabaseClient } from "../database";
 import { PRIVILEGES } from "../database/privileges";
 import { getLogger } from "../util/logger";
-import { nonNullKeys } from "../util/typings";
+import { allConcreteKeys, nonNullKeys } from "../util/typings";
 import { PostRequest } from ".";
 import { guardWithPrivilege } from "./util/privileges";
 
@@ -120,7 +120,7 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
         return 500;
     }
 
-    return {
+    return allConcreteKeys({
         id: deckId,
         displayName: displayName,
         cards: cards.map(x => {
@@ -134,11 +134,20 @@ async function getDeckDetailsResponse(deckId: number): Promise<DeckDetailsRespon
                 manaCost: x.manaCost,
             };
         }),
+        format: {
+            createdAt: summary.formatCreatedAt!.getTime(),
+            id: summary.formatId,
+            displayName: summary.formatDisplayName,
+            owner: {
+                id: summary.formatOwnerId,
+                displayName: summary.formatDisplayName,
+            },
+        },
         ownerDetails: {
             id: summary.ownerId,
             displayName: userDisplayName,
         },
-    };
+    });
 }
 
 function parseDeckBody(body: string) {

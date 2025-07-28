@@ -1,11 +1,20 @@
-export interface FormatDetailsResponse {
-    bannedCardNames: string[];
+export interface FormatBase {
+    /** Epoch ms */
+    createdAt: number;
     displayName: string;
-    formatId: number;
+    id: number;
     owner: {
         id: number;
         displayName: string;
     }
+}
+
+export interface FormatDetailsRequest {
+    id: number;
+}
+
+export interface FormatDetailsResponse extends FormatBase {
+    bannedCards: {}[];
 }
 
 export interface CreateFormatRequest {
@@ -22,3 +31,5 @@ export interface CreateFormatFailureResponse {
 }
 
 export type CreateFormatResponse = CreateFormatSuccessResponse | CreateFormatFailureResponse;
+
+export type FormatSearchResponse = FormatBase[];

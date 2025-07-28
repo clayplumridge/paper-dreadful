@@ -8,6 +8,9 @@ const ManaCostContainer = styled("div")(() => ({
     "> :not(:first-child)": {
         marginLeft: "0.25em",
     },
+    display: "flex",
+    flexGrow: 1,
+    justifyContent: "flex-end",
 }));
 
 export interface ManaCostProps {
