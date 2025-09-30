@@ -46,7 +46,17 @@ export class CardRepo {
         return result.reduce((prev, curr) => prev + Number(curr.numInsertedOrUpdatedRows), 0);
     }
 
+    /**
+     * Drops any cards that don't have entries in the Database; eg. the base scryfall import
+     * isn't done yet but someone created a format and we need to import prices
+     */
     async importScryfallCardPricesForFormat(cards: ScryfallCard.Any[], formatId: number) {
+        const legalCardIds = new Set((await this.db.selectFrom("cards")
+            .select("cards.scryfallId")
+            .execute()).map(x => x.scryfallId));
+
+        cards = cards.filter(x => legalCardIds.has(x.id));
+
         await this.db.insertInto("cardPrices")
             .values(cards
                 .filter(x => x.prices.usd != null)

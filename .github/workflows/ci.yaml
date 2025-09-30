@@ -27,6 +27,6 @@ jobs:
               run: yarn
 
             - name: Run ESLint
-              run: npm run lint
+              run: yarn lint
             - name: Run Tests
-              run: npm test
+              run: yarn test
