@@ -61,7 +61,7 @@ function Row(props: RowProps) {
     const debouncedSearch = React.useMemo(
         () => 
             debounce((cardName: string) => {
-                if(cardName === "") {
+                if(cardName.trim() === "") {
                     return { cards: [] };
                 }
             
