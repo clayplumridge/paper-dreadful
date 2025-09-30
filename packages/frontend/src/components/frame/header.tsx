@@ -71,8 +71,7 @@ function UserDetails(props: UserDetailsProps) {
     const handleLogout = React.useCallback(() => {
         getRestClient()
             .logout()
-            .then(() => location.reload())
-            .catch(e => { throw e; });
+            .then(() => location.reload());
     }, []);
 
     return(

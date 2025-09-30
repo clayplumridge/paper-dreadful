@@ -16,8 +16,7 @@ export function Loading<T extends readonly unknown[] | []>(props: LoadingProps<T
         // Need to make sure we clear things out before changing
         setPromiseResults(undefined);
         Promise.all(props.promises())
-            .then(setPromiseResults)
-            .catch(e => { throw e; });
+            .then(setPromiseResults);
 
     }, [props.promises]);
     

@@ -9,9 +9,9 @@ import { PriceDisplay } from "../card/price";
 export function DeckEditor() {
     return (
         <Box flexDirection="column">
-            <Row search={val => {
+            <Row search={async val => {
                 console.log(`Searching for ${val}`);
-                return Promise.resolve({ manaCost: "WUBRGGGGGGGGGGG", priceInUsd: 1.23 });
+                return { manaCost: "WUBRGGGGGGGGGGG", priceInUsd: 1.23 };
             }}
             />
         </Box>

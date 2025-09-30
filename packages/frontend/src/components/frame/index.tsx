@@ -19,7 +19,7 @@ const PageContainer = styled(Container)(() => ({
     paddingTop: "1em",
 }));
 
-export function Frame(props: React.PropsWithChildren<unknown>) {
+export function Frame(props: React.PropsWithChildren<{}>) {
     const {children} = props;
 
     return (

@@ -18,7 +18,9 @@ module.exports = {
     ],
     overrides: [
         {
-            files: ["*.ts", "*.js"],
+            files: [
+                "*.ts", "*.js", "*.tsx",
+            ],
             rules: {
                 "array-bracket-spacing": ["warn", "never"],
                 "import-newlines/enforce": ["warn", { "items": 3, "semi": true }], 
@@ -60,7 +62,7 @@ module.exports = {
             },
         },
         {
-            files: ["*.test.ts"],
+            files: ["*.test.ts", "*.test.tsx"],
             rules: {
                 // vitest mocks frequently use unbound methods for things like axios
                 "@typescript-eslint/unbound-method": [0],

@@ -25,7 +25,7 @@ export function TestView() {
         setDisplayText(JSON.stringify(result));
     }
     
-    function doLogin() {
+    async function doLogin() {
         window.location.href = "http://localhost:5001/auth/login-with-google";
     }
     
@@ -42,7 +42,7 @@ export function TestView() {
             <Button onClick={() => void createDeck()} variant="outlined">
                 Create Deck
             </Button>
-            <Button onClick={() => doLogin()} variant="outlined">
+            <Button onClick={() => void doLogin()} variant="outlined">
                 Login
             </Button>
             <Button onClick={() => void fetchDeck()} variant="outlined">
