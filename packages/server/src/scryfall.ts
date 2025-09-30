@@ -6,11 +6,19 @@ interface BulkDataResponse {
     download_uri: string;
 }
 
+/**
+ * Fetches the Oracle Cards bulk data item from Scryfall and removes any that are useless to PaperDreadful.
+ * Oracle Cards contain only one item per unique car; eg. there's only one Forest. @see getLatestDefaultCards would instead return one entry for every Forest ever printed.
+ */
 export async function getLatestOracleCards() {
     const latestBulkData = await axios.get<BulkDataResponse>("https://api.scryfall.com/bulk-data/oracle-cards");
     return (await axios.get<ScryfallCard.Any[]>(latestBulkData.data.download_uri)).data.filter(isUseableCard);
 }
 
+/**
+ * Fetches the Default Cards bulk data item from Scryfall and removes any that are useless to PaperDreadful.
+ * Default Cards contains every object on Scryfall; eg. there's many Forests. @see getLatestOracleCards would instead only return one Forest.
+ */
 export async function getLatestDefaultCards() {
     const latestBulkData = await axios.get<BulkDataResponse>("https://api.scryfall.com/bulk-data/default-cards");
     return (await axios.get<ScryfallCard.Any[]>(latestBulkData.data.download_uri)).data.filter(isUseableCard);
