@@ -44,11 +44,6 @@ function CreateDeckPage(props: CreateDeckPageProps) {
         <Box className="flex-column flex-grow">
             <FormatPicker initialFormat={props.formatDetails} />
             <TextField label="Deck Name" />
-            <TextField
-                label="Cards"
-                multiline
-                rows={10}
-            />
             <DeckEditor />
         </Box>
     ); 

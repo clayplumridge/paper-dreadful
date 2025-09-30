@@ -1,6 +1,7 @@
 import { Kysely } from "kysely";
 
-import { allConcreteKeys } from "../../util/typings";
+import { allConcreteKeys } from "@/common/util/typings";
+
 import { getDatabaseClient } from "..";
 import { Database, NewFormat } from "../schema";
 

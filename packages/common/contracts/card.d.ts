@@ -17,3 +17,15 @@ export interface CardPricesSuccessResponse {
 }
 
 export type CardPricesResponse = CardPricesSuccessResponse | ErrorResponse;
+
+export interface CardSearchSuccessResponse {
+    cards: {
+        cardId: string;
+        displayName: string;
+        imageUrl: string;
+        manaCost: string;
+        priceInUsd: number;
+    }[];
+}
+
+export type CardSearchResponse = CardSearchSuccessResponse | ErrorResponse;

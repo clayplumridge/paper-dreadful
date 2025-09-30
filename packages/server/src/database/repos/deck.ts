@@ -1,6 +1,7 @@
 import { Kysely } from "kysely";
 
-import { nonNullKeys } from "../../util/typings";
+import { nonNullKeys } from "@/common/util/typings";
+
 import { Database, NewCardEntry, NewDeck } from "../schema";
 
 export class DeckRepo {

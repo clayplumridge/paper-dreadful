@@ -7,11 +7,11 @@ import {
     DeckDetailsRequest,
     DeckDetailsResponse,
 } from "@/common/contracts";
+import { allConcreteKeys, nonNullKeys } from "@/common/util/typings";
 
 import { getDatabaseClient } from "../database";
 import { PRIVILEGES } from "../database/privileges";
 import { getLogger } from "../util/logger";
-import { allConcreteKeys, nonNullKeys } from "../util/typings";
 import { PostRequest } from ".";
 import { guardWithPrivilege } from "./util/privileges";
 

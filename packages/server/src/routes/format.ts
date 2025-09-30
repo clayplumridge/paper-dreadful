@@ -8,12 +8,12 @@ import {
     FormatDetailsResponse,
     FormatSearchResponse,
 } from "@/common/contracts";
+import { Unpromise } from "@/common/util/typings";
 
 import { getDatabaseClient } from "../database";
 import { PRIVILEGES } from "../database/privileges";
 import { getCardsWithPrices } from "../scryfall";
 import { getLogger } from "../util/logger";
-import { Unpromise } from "../util/typings";
 import { PostRequest } from ".";
 import { guardWithPrivilege } from "./util/privileges";
 

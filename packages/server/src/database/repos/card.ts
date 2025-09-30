@@ -57,6 +57,25 @@ export class CardRepo {
                 })))
             .execute();
     }
+
+    async search(cardName: string, formatId: number) {
+        const result = await this.db.selectFrom("cards")
+            .where("cards.displayName", "like", `%${cardName}%`)
+            .leftJoin("cardPrices", join =>
+                join.onRef("cardPrices.cardId", "=", "cards.scryfallId")
+                    .on("cardPrices.formatId", "=", formatId))
+            .select([
+                "cards.displayName",
+                "cardPrices.priceInUsd",
+                "cards.scryfallId",
+                "cards.manaCost",
+                "cards.imageUrl",
+            ])
+            .execute();
+
+        return result.filter(x => x.priceInUsd)
+            .map(x => ({...x, priceInUsd: Number(x.priceInUsd)}));
+    }
 }
 
 function toDatabaseCard(card: ScryfallCard.Any): Card {
